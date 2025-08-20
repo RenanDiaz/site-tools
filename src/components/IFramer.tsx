@@ -4,7 +4,7 @@ import { Button, Col, Collapse, Form, Input, Label, Row, Spinner } from "reactst
 import styled from "styled-components";
 import { ChevronDown, ChevronUp } from "./Images";
 import { ImageButton } from "./Utils";
-import { iframerLocalStorage } from "./LocalStorage";
+import { iframerLocalStorage } from "../utility/LocalStorage";
 
 const Iframe = styled.iframe`
   border: 1px solid #ccc;

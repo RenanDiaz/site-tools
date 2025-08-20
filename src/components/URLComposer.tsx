@@ -4,7 +4,7 @@ import { v4 as uuid } from "uuid";
 import { CopyIcon, RemoveIcon } from "./Images";
 import { LinkContainer } from "react-router-bootstrap";
 import { Paths } from "../App";
-import { urlComposerLocalStorage } from "./LocalStorage";
+import { urlComposerLocalStorage } from "../utility/LocalStorage";
 
 interface SearchParam {
   name: string;

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { Home } from "./components/Home";
@@ -7,6 +7,8 @@ import { URLComposer } from "./components/URLComposer";
 import { TokenGen } from "./components/TokenGen";
 import { SVGToJSX } from "./components/SVGToJSX";
 import { JSONPrettyPrint } from "./components/JSONPrettyPrint";
+import { CookiesToJSON } from "./components/CookiesToJSON";
+import { JSONParser } from "./components/JSONParser";
 
 export enum Paths {
   Root = "/",
@@ -15,6 +17,8 @@ export enum Paths {
   TokenGen = "/token-generator",
   SVGToJSX = "/svg-converter",
   JSONPrettyPrint = "/json-pretty-print",
+  CookiesToJSON = "/cookies-to-json",
+  JSONParser = "/json-parser",
 }
 
 const router = createBrowserRouter([
@@ -46,11 +50,23 @@ const router = createBrowserRouter([
         path: Paths.JSONPrettyPrint,
         element: <JSONPrettyPrint />,
       },
+      {
+        path: Paths.CookiesToJSON,
+        element: <CookiesToJSON />,
+      },
+      {
+        path: Paths.JSONParser,
+        element: <JSONParser />,
+      },
     ],
   },
 ]);
 
 const App: FC = () => {
+  useEffect(() => {
+    document.body.setAttribute("data-bs-theme", "dark");
+  }, []);
+
   return <RouterProvider router={router} />;
 };
 

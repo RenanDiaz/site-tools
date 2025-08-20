@@ -9,21 +9,24 @@ export const Home: FC = () => {
       <Col>
         <h2>Home</h2>
         <p>Welcome to Site Tools.</p>
-        <p>
-          <Link to={Paths.Iframer}>IFramer</Link>
-        </p>
-        <p>
-          <Link to={Paths.URLComposer}>URLComposer</Link>
-        </p>
-        <p>
-          <Link to={Paths.TokenGen}>TokenGen</Link>
-        </p>
-        <p>
-          <Link to={Paths.SVGToJSX}>SVG to JSX</Link>
-        </p>
-        <p>
-          <Link to={Paths.JSONPrettyPrint}>JSON Pretty Print</Link>
-        </p>
+        {Object.values(Paths).map((path) => (
+          <p key={path}>
+            <Link to={path}>
+              {
+                {
+                  [Paths.Root]: "Home",
+                  [Paths.Iframer]: "Iframer",
+                  [Paths.URLComposer]: "URL Composer",
+                  [Paths.TokenGen]: "Token Generator",
+                  [Paths.SVGToJSX]: "SVG Converter",
+                  [Paths.JSONPrettyPrint]: "JSON Pretty Print",
+                  [Paths.CookiesToJSON]: "Cookies to JSON",
+                  [Paths.JSONParser]: "JSON Parser",
+                }[path as Paths]
+              }
+            </Link>
+          </p>
+        ))}
       </Col>
     </Row>
   );

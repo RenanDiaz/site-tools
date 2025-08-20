@@ -86,26 +86,47 @@ export const SVGToJSX: FC = () => {
           </Button>
         </FormGroup>
       </Form>
-      <Card>
-        <CardHeader>
-          <Row className="align-items-center">
-            <Col>Result</Col>
-            <Col xs="auto">
-              <Button color="primary" onClick={handleCopyClick} id="copiedTooltip">
-                <CopyIcon />
-              </Button>
-              <Tooltip placement="top" isOpen={tooltipOpen} target="copiedTooltip" autohide={false}>
-                Copied!
-              </Tooltip>
-            </Col>
-          </Row>
-        </CardHeader>
-        <CardBody style={{ maxHeight: 400, overflowY: "auto" }}>
-          <pre className="mb-0">
-            <code>{jsxString}</code>
-          </pre>
-        </CardBody>
-      </Card>
+      <Row>
+        <Col xs xl="9">
+          <Card>
+            <CardHeader>
+              <Row className="align-items-center">
+                <Col>Result</Col>
+                <Col xs="auto">
+                  <Button color="primary" onClick={handleCopyClick} id="copiedTooltip">
+                    <CopyIcon />
+                  </Button>
+                  <Tooltip
+                    placement="top"
+                    isOpen={tooltipOpen}
+                    target="copiedTooltip"
+                    autohide={false}
+                  >
+                    Copied!
+                  </Tooltip>
+                </Col>
+              </Row>
+            </CardHeader>
+            <CardBody style={{ maxHeight: 400, overflowY: "auto" }}>
+              <pre className="mb-0">
+                <code>{jsxString}</code>
+              </pre>
+            </CardBody>
+          </Card>
+        </Col>
+        <Col xl="3">
+          {/* svg preview */}
+          <Card>
+            <CardHeader>SVG Preview</CardHeader>
+            <CardBody style={{ maxHeight: 400, overflowY: "auto" }}>
+              <div
+                dangerouslySetInnerHTML={{ __html: svgString }}
+                style={{ width: "100%", height: "100%" }}
+              />
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
     </>
   );
 };

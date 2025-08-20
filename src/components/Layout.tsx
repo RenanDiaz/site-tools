@@ -27,7 +27,7 @@ export const Layout: FC = () => {
 
   return (
     <Container className="mb-4">
-      <Navbar fixed="top" container expand={false} color="light">
+      <Navbar fixed="top" container expand={false}>
         <Row className="align-items-center">
           <Col xs="auto">
             <NavbarToggler onClick={toggle} />
@@ -40,31 +40,24 @@ export const Layout: FC = () => {
           <OffcanvasHeader toggle={toggle}>Menú</OffcanvasHeader>
           <OffcanvasBody>
             <Nav vertical navbar>
-              <NavItem>
-                <NavLink to={Paths.Iframer} className="nav-link" onClick={toggle}>
-                  IFramer
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink to={Paths.URLComposer} className="nav-link" onClick={toggle}>
-                  URLComposer
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink to={Paths.TokenGen} className="nav-link" onClick={toggle}>
-                  TokenGen
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink to={Paths.SVGToJSX} className="nav-link" onClick={toggle}>
-                  SVG to JSX
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink to={Paths.JSONPrettyPrint} className="nav-link" onClick={toggle}>
-                  JSON Pretty Print
-                </NavLink>
-              </NavItem>
+              {Object.values(Paths).map((path) => (
+                <NavItem key={path}>
+                  <NavLink to={path} className="nav-link" onClick={toggle}>
+                    {
+                      {
+                        [Paths.Root]: "Home",
+                        [Paths.Iframer]: "Iframer",
+                        [Paths.URLComposer]: "URL Composer",
+                        [Paths.TokenGen]: "Token Generator",
+                        [Paths.SVGToJSX]: "SVG Converter",
+                        [Paths.JSONPrettyPrint]: "JSON Pretty Print",
+                        [Paths.CookiesToJSON]: "Cookies to JSON",
+                        [Paths.JSONParser]: "JSON Parser",
+                      }[path as Paths]
+                    }
+                  </NavLink>
+                </NavItem>
+              ))}
             </Nav>
           </OffcanvasBody>
         </Offcanvas>
