@@ -1,4 +1,5 @@
-import { ChangeEvent, FC, FormEvent, useState } from "react";
+import type { ChangeEvent, FC, FormEvent } from "react";
+import { useState } from "react";
 import {
   Button,
   Card,

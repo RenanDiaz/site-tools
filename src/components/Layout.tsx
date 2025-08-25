@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { useState, type FC } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import {
   Col,
@@ -14,7 +14,7 @@ import {
   Row,
 } from "reactstrap";
 import styled from "styled-components";
-import { Paths } from "../App";
+import { Paths, type PathsType } from "../App";
 
 const Body = styled.div`
   margin-top: calc(66px + 1rem);
@@ -53,7 +53,7 @@ export const Layout: FC = () => {
                         [Paths.JSONPrettyPrint]: "JSON Pretty Print",
                         [Paths.CookiesToJSON]: "Cookies to JSON",
                         [Paths.JSONParser]: "JSON Parser",
-                      }[path as Paths]
+                      }[path as PathsType]
                     }
                   </NavLink>
                 </NavItem>

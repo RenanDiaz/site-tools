@@ -1,7 +1,7 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { Link } from "react-router-dom";
 import { Col, Row } from "reactstrap";
-import { Paths } from "../App";
+import { Paths, type PathsType } from "../App";
 
 export const Home: FC = () => {
   return (
@@ -22,7 +22,7 @@ export const Home: FC = () => {
                   [Paths.JSONPrettyPrint]: "JSON Pretty Print",
                   [Paths.CookiesToJSON]: "Cookies to JSON",
                   [Paths.JSONParser]: "JSON Parser",
-                }[path as Paths]
+                }[path as PathsType]
               }
             </Link>
           </p>

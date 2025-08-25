@@ -7,7 +7,7 @@ export function useRevertableState<T>(
   const [value, setValue] = useState<T>(initialValue);
 
   useEffect(() => {
-    let revertTimeout: NodeJS.Timeout;
+    let revertTimeout: ReturnType<typeof setTimeout>;
 
     if (value !== initialValue) {
       revertTimeout = setTimeout(() => {

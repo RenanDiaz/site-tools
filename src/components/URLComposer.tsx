@@ -1,8 +1,8 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState, type FC } from "react";
+import { LinkContainer } from "react-router-bootstrap";
 import { Button, Card, Col, Collapse, Form, FormGroup, Input, Label, Row } from "reactstrap";
 import { v4 as uuid } from "uuid";
 import { CopyIcon, RemoveIcon } from "./Images";
-import { LinkContainer } from "react-router-bootstrap";
 import { Paths } from "../App";
 import { urlComposerLocalStorage } from "../utility/LocalStorage";
 

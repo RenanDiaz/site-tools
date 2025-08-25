@@ -1,4 +1,5 @@
-import { FC, FormEvent, useEffect, useState } from "react";
+import type { FC, FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button, Col, Collapse, Form, Input, Label, Row, Spinner } from "reactstrap";
 import styled from "styled-components";

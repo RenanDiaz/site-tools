@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { Col, Modal, ModalBody, Row, Spinner } from "reactstrap";
 import styled from "styled-components";
 

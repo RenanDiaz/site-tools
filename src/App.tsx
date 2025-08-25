@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { useEffect, type FC } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { Home } from "./components/Home";
@@ -10,16 +10,19 @@ import { JSONPrettyPrint } from "./components/JSONPrettyPrint";
 import { CookiesToJSON } from "./components/CookiesToJSON";
 import { JSONParser } from "./components/JSONParser";
 
-export enum Paths {
-  Root = "/",
-  Iframer = "/iframer",
-  URLComposer = "/url-composer",
-  TokenGen = "/token-generator",
-  SVGToJSX = "/svg-converter",
-  JSONPrettyPrint = "/json-pretty-print",
-  CookiesToJSON = "/cookies-to-json",
-  JSONParser = "/json-parser",
-}
+export const Paths = {
+  Root: "/",
+  Iframer: "/iframer",
+  URLComposer: "/url-composer",
+  TokenGen: "/token-generator",
+  SVGToJSX: "/svg-converter",
+  JSONPrettyPrint: "/json-pretty-print",
+  CookiesToJSON: "/cookies-to-json",
+  JSONParser: "/json-parser",
+} as const;
+
+// For type usage
+export type PathsType = (typeof Paths)[keyof typeof Paths];
 
 const router = createBrowserRouter([
   {
