@@ -9,6 +9,7 @@ import { SVGToJSX } from "./components/SVGToJSX";
 import { JSONPrettyPrint } from "./components/JSONPrettyPrint";
 import { CookiesToJSON } from "./components/CookiesToJSON";
 import { JSONParser } from "./components/JSONParser";
+import { SignalRNotifier } from "./components/SignalRNotifier";
 
 export const Paths = {
   Root: "/",
@@ -19,6 +20,7 @@ export const Paths = {
   JSONPrettyPrint: "/json-pretty-print",
   CookiesToJSON: "/cookies-to-json",
   JSONParser: "/json-parser",
+  SignalRNotifier: "/signalr-notifier",
 } as const;
 
 // For type usage
@@ -60,6 +62,10 @@ const router = createBrowserRouter([
       {
         path: Paths.JSONParser,
         element: <JSONParser />,
+      },
+      {
+        path: Paths.SignalRNotifier,
+        element: <SignalRNotifier />,
       },
     ],
   },

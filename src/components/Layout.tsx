@@ -53,6 +53,7 @@ export const Layout: FC = () => {
                         [Paths.JSONPrettyPrint]: "JSON Pretty Print",
                         [Paths.CookiesToJSON]: "Cookies to JSON",
                         [Paths.JSONParser]: "JSON Parser",
+                        [Paths.SignalRNotifier]: "SignalR Notifier",
                       }[path as PathsType]
                     }
                   </NavLink>
