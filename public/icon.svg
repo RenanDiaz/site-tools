@@ -1,0 +1,64 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <rect width="512" height="512" rx="115" fill="url(#gradient)"/>
+
+  <!-- Gradient definition -->
+  <defs>
+    <linearGradient id="gradient" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+
+    <!-- Shadow for depth -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Wrench tool (left side) -->
+  <g filter="url(#shadow)">
+    <path d="M180 340 L180 280 C180 270 175 265 165 265 L155 265 C145 265 140 270 140 280 L140 340 C140 350 145 355 155 355 L165 355 C175 355 180 350 180 340 Z" fill="white" opacity="0.95"/>
+    <circle cx="160" cy="245" r="25" fill="white" opacity="0.95"/>
+    <rect x="150" y="220" width="20" height="30" fill="white" opacity="0.95"/>
+  </g>
+
+  <!-- Gear (center-top) -->
+  <g filter="url(#shadow)">
+    <path d="M256 140 L268 145 L275 133 L290 140 L290 155 L302 160 L302 175 L290 180 L290 195 L275 202 L268 190 L256 195 L244 190 L237 202 L222 195 L222 180 L210 175 L210 160 L222 155 L222 140 L237 133 L244 145 Z" fill="white" opacity="0.95"/>
+    <circle cx="256" cy="167.5" r="20" fill="#4F46E5"/>
+  </g>
+
+  <!-- Code brackets (right side) -->
+  <g filter="url(#shadow)">
+    <path d="M340 230 L320 250 L340 270" stroke="white" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.95"/>
+    <path d="M370 230 L390 250 L370 270" stroke="white" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.95"/>
+  </g>
+
+  <!-- Swiss army knife blade effect (diagonal elements) -->
+  <g filter="url(#shadow)">
+    <rect x="200" y="310" width="120" height="16" rx="8" fill="white" opacity="0.9" transform="rotate(-15 260 318)"/>
+    <rect x="210" y="345" width="100" height="14" rx="7" fill="white" opacity="0.85" transform="rotate(-15 260 352)"/>
+    <rect x="220" y="375" width="80" height="12" rx="6" fill="white" opacity="0.8" transform="rotate(-15 260 381)"/>
+  </g>
+
+  <!-- Center connecting element (utility symbol) -->
+  <g filter="url(#shadow)">
+    <circle cx="256" cy="256" r="45" fill="white" opacity="0.15"/>
+    <circle cx="256" cy="256" r="35" fill="white" opacity="0.95"/>
+    <path d="M256 236 L256 276 M236 256 L276 256" stroke="#4F46E5" stroke-width="8" stroke-linecap="round"/>
+  </g>
+
+  <!-- Small utility dots (representing multiple tools) -->
+  <circle cx="200" cy="200" r="8" fill="white" opacity="0.7"/>
+  <circle cx="312" cy="200" r="8" fill="white" opacity="0.7"/>
+  <circle cx="200" cy="312" r="8" fill="white" opacity="0.7"/>
+  <circle cx="312" cy="312" r="8" fill="white" opacity="0.7"/>
+</svg>

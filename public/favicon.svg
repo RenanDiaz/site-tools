@@ -1,0 +1,27 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Simplified version optimized for small sizes -->
+  <rect width="32" height="32" rx="7" fill="url(#gradient)"/>
+
+  <defs>
+    <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Simplified wrench -->
+  <path d="M10 21 L10 18 C10 17.5 9.8 17.3 9.5 17.3 L9 17.3 C8.7 17.3 8.5 17.5 8.5 18 L8.5 21 C8.5 21.5 8.7 21.7 9 21.7 L9.5 21.7 C9.8 21.7 10 21.5 10 21 Z" fill="white"/>
+  <circle cx="9.25" cy="15.5" r="1.5" fill="white"/>
+
+  <!-- Simplified gear -->
+  <circle cx="16" cy="11" r="3" fill="white" opacity="0.9"/>
+  <circle cx="16" cy="11" r="1.5" fill="#4F46E5"/>
+
+  <!-- Code brackets -->
+  <path d="M20 15 L18.5 16.5 L20 18" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <path d="M23 15 L24.5 16.5 L23 18" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+
+  <!-- Center plus symbol -->
+  <circle cx="16" cy="21" r="3.5" fill="white"/>
+  <path d="M16 19 L16 23 M14 21 L18 21" stroke="#4F46E5" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
