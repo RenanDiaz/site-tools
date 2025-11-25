@@ -35,10 +35,9 @@ This document tracks potential enhancements and features to add to the Site Tool
   - COMPLETED: Decode header/payload, expiration display with status badge, timestamp formatting
   - Location: [src/components/JWTDecoder.tsx](src/components/JWTDecoder.tsx)
 
-- [ ] **URL Encoder/Decoder**
-  - Encode/decode URL components
-  - Full URL encoding or component-only mode
-  - Copy to clipboard
+- [x] **URL Encoder/Decoder**
+  - COMPLETED: Encode/decode with real-time conversion, swap input/output
+  - Location: [src/components/URLEncoder.tsx](src/components/URLEncoder.tsx)
 
 - [ ] **HTML Entity Encoder/Decoder**
   - Convert special characters to/from HTML entities
@@ -106,10 +105,9 @@ This document tracks potential enhancements and features to add to the Site Tool
   - Before/after comparison
   - File upload support
 
-- [ ] **String Case Converter**
-  - camelCase, PascalCase, snake_case, kebab-case, SCREAMING_SNAKE_CASE
-  - Title Case, Sentence case
-  - Copy each format individually
+- [x] **String Case Converter**
+  - COMPLETED: 12 case formats (camelCase, PascalCase, snake_case, kebab-case, etc.), real-time conversion
+  - Location: [src/components/StringCaseConverter.tsx](src/components/StringCaseConverter.tsx)
 
 - [ ] **Text Diff Viewer**
   - Side-by-side or inline diff
@@ -130,10 +128,9 @@ This document tracks potential enhancements and features to add to the Site Tool
 ## 🎨 UX Enhancements
 
 ### Navigation & Discovery
-- [ ] **Tool Search/Filter**
-  - Quick search in navigation menu
-  - Keyboard shortcut to open (Cmd/Ctrl + K)
-  - Fuzzy search support
+- [x] **Tool Search/Filter**
+  - COMPLETED: Search input in navigation menu, auto-focus on open, filters tools in real-time
+  - Location: [src/components/Layout.tsx](src/components/Layout.tsx)
 
 - [ ] **Favorites System**
   - Star frequently used tools

@@ -23,6 +23,8 @@ export const Home: FC = () => {
                   [Paths.HashGenerator]: "Hash Generator",
                   [Paths.JWTDecoder]: "JWT Decoder",
                   [Paths.TimestampConverter]: "Timestamp Converter",
+                  [Paths.URLEncoder]: "URL Encoder/Decoder",
+                  [Paths.StringCaseConverter]: "String Case Converter",
                   [Paths.SVGToJSX]: "SVG Converter",
                   [Paths.JSONPrettyPrint]: "JSON Pretty Print",
                   [Paths.CookiesToJSON]: "Cookies to JSON",

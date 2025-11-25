@@ -15,6 +15,8 @@ import { UUIDGenerator } from "./components/UUIDGenerator";
 import { HashGenerator } from "./components/HashGenerator";
 import { JWTDecoder } from "./components/JWTDecoder";
 import { TimestampConverter } from "./components/TimestampConverter";
+import { URLEncoder } from "./components/URLEncoder";
+import { StringCaseConverter } from "./components/StringCaseConverter";
 
 export const Paths = {
   Root: "/",
@@ -26,6 +28,8 @@ export const Paths = {
   HashGenerator: "/hash-generator",
   JWTDecoder: "/jwt-decoder",
   TimestampConverter: "/timestamp-converter",
+  URLEncoder: "/url-encoder",
+  StringCaseConverter: "/string-case-converter",
   SVGToJSX: "/svg-converter",
   JSONPrettyPrint: "/json-pretty-print",
   CookiesToJSON: "/cookies-to-json",
@@ -76,6 +80,14 @@ const router = createBrowserRouter([
       {
         path: Paths.TimestampConverter,
         element: <TimestampConverter />,
+      },
+      {
+        path: Paths.URLEncoder,
+        element: <URLEncoder />,
+      },
+      {
+        path: Paths.StringCaseConverter,
+        element: <StringCaseConverter />,
       },
       {
         path: Paths.SVGToJSX,
