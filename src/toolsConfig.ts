@@ -1,4 +1,4 @@
-import { Paths, type PathsType } from "./App";
+import { Paths, type PathsType } from "./paths";
 
 export interface ToolInfo {
   path: PathsType;
