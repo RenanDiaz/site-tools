@@ -1,5 +1,5 @@
 import type { ChangeEvent, FC, FormEvent } from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Button,
   Card,
@@ -12,6 +12,7 @@ import {
   Row,
   Tooltip,
 } from "reactstrap";
+import DOMPurify from "dompurify";
 import { CopyIcon } from "./Images";
 import { useRevertableState } from "../utility/useRevertableState";
 import styled from "styled-components";
@@ -48,10 +49,22 @@ function svgToJSX(svgString: string) {
     .trim();
 }
 
+// Configure DOMPurify to allow only SVG elements and attributes
+const sanitizeSVG = (svg: string): string => {
+  return DOMPurify.sanitize(svg, {
+    USE_PROFILES: { svg: true, svgFilters: true },
+    ADD_TAGS: ["use"],
+    ADD_ATTR: ["xlink:href", "xmlns:xlink"],
+  });
+};
+
 export const SVGToJSX: FC = () => {
   const [svgString, setSvgString] = useState<string>("");
   const [jsxString, setJSXString] = useState<string>("");
   const [tooltipOpen, setTooltipOpen] = useRevertableState<boolean>(false, 2000);
+
+  // Sanitize SVG for preview to prevent XSS
+  const sanitizedSVG = useMemo(() => sanitizeSVG(svgString), [svgString]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -121,7 +134,7 @@ export const SVGToJSX: FC = () => {
             <CardHeader>SVG Preview</CardHeader>
             <CardBody style={{ maxHeight: 400, overflowY: "auto" }}>
               <div
-                dangerouslySetInnerHTML={{ __html: svgString }}
+                dangerouslySetInnerHTML={{ __html: sanitizedSVG }}
                 style={{ width: "100%", height: "100%" }}
               />
             </CardBody>

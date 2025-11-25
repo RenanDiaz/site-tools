@@ -10,9 +10,9 @@ This document tracks potential enhancements and features to add to the Site Tool
   - COMPLETED: Implemented with multiple token types (alphanumeric, hex, base64, etc.), configurable length and count
 
 ### Security Fixes
-- [ ] **Fix XSS vulnerability in SVGToJSX**
-  - Location: [src/components/SVGToJSX.tsx:124](src/components/SVGToJSX.tsx#L124)
-  - Issue: Uses `dangerouslySetInnerHTML` without sanitization
+- [x] **Fix XSS vulnerability in SVGToJSX**
+  - Location: [src/components/SVGToJSX.tsx](src/components/SVGToJSX.tsx)
+  - COMPLETED: Added DOMPurify sanitization with SVG profile before rendering preview
   - Priority: HIGH
 
 - [ ] **Add input sanitization for IFramer**
@@ -71,22 +71,17 @@ This document tracks potential enhancements and features to add to the Site Tool
   - Results highlighting
 
 ### Web Development Utilities
-- [ ] **Color Converter**
-  - Convert between HEX, RGB, RGBA, HSL, HSLA
-  - Color picker interface
-  - Copy in any format
-  - Color palette generator
+- [x] **Color Converter**
+  - COMPLETED: Convert between HEX, RGB, RGBA, HSL, HSLA with color picker, alpha slider, live preview
+  - Location: [src/components/ColorConverter.tsx](src/components/ColorConverter.tsx)
 
 - [x] **Timestamp Converter**
   - COMPLETED: Unix (sec/ms) ↔ ISO 8601 ↔ UTC ↔ local, live current time, relative time, "Use Now" button
   - Location: [src/components/TimestampConverter.tsx](src/components/TimestampConverter.tsx)
 
-- [ ] **Regex Tester**
-  - Test patterns against text
-  - Live match highlighting
-  - Capture groups display
-  - Common patterns library
-  - Flags support (g, i, m, s, u, y)
+- [x] **Regex Tester**
+  - COMPLETED: Test patterns with live match highlighting, capture groups (numbered and named), all regex flags (g, i, m, s, u)
+  - Location: [src/components/RegexTester.tsx](src/components/RegexTester.tsx)
 
 - [x] **UUID/GUID Generator**
   - COMPLETED: Generate v4 UUIDs with multiple formats (lowercase, uppercase, no hyphens, braces), bulk generation

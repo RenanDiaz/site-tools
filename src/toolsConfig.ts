@@ -124,6 +124,18 @@ export const tools: ToolInfo[] = [
     description: "Connect and send messages via SignalR",
     category: "web",
   },
+  {
+    path: Paths.RegexTester,
+    label: "Regex Tester",
+    description: "Test regular expressions with live match highlighting",
+    category: "web",
+  },
+  {
+    path: Paths.ColorConverter,
+    label: "Color Converter",
+    description: "Convert between HEX, RGB, RGBA, HSL, and HSLA",
+    category: "web",
+  },
 ];
 
 // Helper to get label by path (for Layout navigation)

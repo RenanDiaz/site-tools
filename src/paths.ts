@@ -15,6 +15,8 @@ export const Paths = {
   CookiesToJSON: "/cookies-to-json",
   JSONParser: "/json-parser",
   SignalRNotifier: "/signalr-notifier",
+  RegexTester: "/regex-tester",
+  ColorConverter: "/color-converter",
 } as const;
 
 export type PathsType = (typeof Paths)[keyof typeof Paths];

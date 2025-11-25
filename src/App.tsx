@@ -17,6 +17,8 @@ import { JWTDecoder } from "./components/JWTDecoder";
 import { TimestampConverter } from "./components/TimestampConverter";
 import { URLEncoder } from "./components/URLEncoder";
 import { StringCaseConverter } from "./components/StringCaseConverter";
+import { RegexTester } from "./components/RegexTester";
+import { ColorConverter } from "./components/ColorConverter";
 import { Paths } from "./paths";
 
 // Re-export for backwards compatibility
@@ -90,6 +92,14 @@ const router = createBrowserRouter([
       {
         path: Paths.SignalRNotifier,
         element: <SignalRNotifier />,
+      },
+      {
+        path: Paths.RegexTester,
+        element: <RegexTester />,
+      },
+      {
+        path: Paths.ColorConverter,
+        element: <ColorConverter />,
       },
     ],
   },
