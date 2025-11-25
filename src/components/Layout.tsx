@@ -15,30 +15,12 @@ import {
   Row,
 } from "reactstrap";
 import styled from "styled-components";
-import { Paths, type PathsType } from "../App";
+import { Paths } from "../App";
+import { tools, getToolLabel } from "../toolsConfig";
 
 const Body = styled.div`
   margin-top: calc(66px + 1rem);
 `;
-
-const pathLabels: Record<PathsType, string> = {
-  [Paths.Root]: "Home",
-  [Paths.Iframer]: "Iframer",
-  [Paths.URLComposer]: "URL Composer",
-  [Paths.TokenGen]: "Token Generator",
-  [Paths.Base64]: "Base64 Encoder/Decoder",
-  [Paths.UUIDGenerator]: "UUID Generator",
-  [Paths.HashGenerator]: "Hash Generator",
-  [Paths.JWTDecoder]: "JWT Decoder",
-  [Paths.TimestampConverter]: "Timestamp Converter",
-  [Paths.URLEncoder]: "URL Encoder/Decoder",
-  [Paths.StringCaseConverter]: "String Case Converter",
-  [Paths.SVGToJSX]: "SVG Converter",
-  [Paths.JSONPrettyPrint]: "JSON Pretty Print",
-  [Paths.CookiesToJSON]: "Cookies to JSON",
-  [Paths.JSONParser]: "JSON Parser",
-  [Paths.SignalRNotifier]: "SignalR Notifier",
-};
 
 export const Layout: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -51,13 +33,15 @@ export const Layout: FC = () => {
     }
   };
 
-  const filteredPaths = useMemo(() => {
+  const filteredTools = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
-    if (!query) return Object.values(Paths);
+    if (!query) return tools;
 
-    return Object.values(Paths).filter((path) => {
-      const label = pathLabels[path as PathsType];
-      return label?.toLowerCase().includes(query);
+    return tools.filter((tool) => {
+      return (
+        tool.label.toLowerCase().includes(query) ||
+        tool.description.toLowerCase().includes(query)
+      );
     });
   }, [searchQuery]);
 
@@ -73,7 +57,7 @@ export const Layout: FC = () => {
             <NavbarToggler onClick={toggle} />
           </Col>
           <Col xs="auto">
-            <NavbarBrand href="/">Home</NavbarBrand>
+            <NavbarBrand href="/">Site Tools</NavbarBrand>
           </Col>
         </Row>
         <Offcanvas isOpen={isOpen} toggle={toggle}>
@@ -88,14 +72,20 @@ export const Layout: FC = () => {
               autoFocus
             />
             <Nav vertical navbar>
-              {filteredPaths.map((path) => (
-                <NavItem key={path}>
-                  <NavLink to={path} className="nav-link" onClick={toggle}>
-                    {pathLabels[path as PathsType]}
+              <NavItem>
+                <NavLink to={Paths.Root} className="nav-link" onClick={toggle}>
+                  {getToolLabel(Paths.Root)}
+                </NavLink>
+              </NavItem>
+              <hr className="my-2" />
+              {filteredTools.map((tool) => (
+                <NavItem key={tool.path}>
+                  <NavLink to={tool.path} className="nav-link" onClick={toggle}>
+                    {tool.label}
                   </NavLink>
                 </NavItem>
               ))}
-              {filteredPaths.length === 0 && (
+              {filteredTools.length === 0 && (
                 <p className="text-muted small px-3">No tools found</p>
               )}
             </Nav>
