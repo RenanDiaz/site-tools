@@ -27,17 +27,13 @@ This document tracks potential enhancements and features to add to the Site Tool
   - COMPLETED: Encode/decode with UTF-8 support, swap input/output, real-time conversion
   - Location: [src/components/Base64.tsx](src/components/Base64.tsx)
 
-- [ ] **Hash Generator**
-  - Support: MD5, SHA-1, SHA-256, SHA-512
-  - Hash text input or files
-  - Compare hashes
-  - Copy individual or all hashes
+- [x] **Hash Generator**
+  - COMPLETED: SHA-1, SHA-256, SHA-384, SHA-512 using Web Crypto API, real-time hashing, copy individual or all
+  - Location: [src/components/HashGenerator.tsx](src/components/HashGenerator.tsx)
 
-- [ ] **JWT Decoder**
-  - Decode JWT tokens to view header/payload
-  - Display expiration time (human-readable)
-  - Validation status indicator
-  - Works with Token Generator feature
+- [x] **JWT Decoder**
+  - COMPLETED: Decode header/payload, expiration display with status badge, timestamp formatting
+  - Location: [src/components/JWTDecoder.tsx](src/components/JWTDecoder.tsx)
 
 - [ ] **URL Encoder/Decoder**
   - Encode/decode URL components
@@ -82,11 +78,9 @@ This document tracks potential enhancements and features to add to the Site Tool
   - Copy in any format
   - Color palette generator
 
-- [ ] **Timestamp Converter**
-  - Unix timestamp ↔ ISO 8601 ↔ human-readable
-  - Current timestamp quick copy
-  - Timezone support
-  - Relative time calculation
+- [x] **Timestamp Converter**
+  - COMPLETED: Unix (sec/ms) ↔ ISO 8601 ↔ UTC ↔ local, live current time, relative time, "Use Now" button
+  - Location: [src/components/TimestampConverter.tsx](src/components/TimestampConverter.tsx)
 
 - [ ] **Regex Tester**
   - Test patterns against text

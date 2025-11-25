@@ -12,6 +12,9 @@ import { JSONParser } from "./components/JSONParser";
 import { SignalRNotifier } from "./components/SignalRNotifier";
 import { Base64 } from "./components/Base64";
 import { UUIDGenerator } from "./components/UUIDGenerator";
+import { HashGenerator } from "./components/HashGenerator";
+import { JWTDecoder } from "./components/JWTDecoder";
+import { TimestampConverter } from "./components/TimestampConverter";
 
 export const Paths = {
   Root: "/",
@@ -20,6 +23,9 @@ export const Paths = {
   TokenGen: "/token-generator",
   Base64: "/base64",
   UUIDGenerator: "/uuid-generator",
+  HashGenerator: "/hash-generator",
+  JWTDecoder: "/jwt-decoder",
+  TimestampConverter: "/timestamp-converter",
   SVGToJSX: "/svg-converter",
   JSONPrettyPrint: "/json-pretty-print",
   CookiesToJSON: "/cookies-to-json",
@@ -58,6 +64,18 @@ const router = createBrowserRouter([
       {
         path: Paths.UUIDGenerator,
         element: <UUIDGenerator />,
+      },
+      {
+        path: Paths.HashGenerator,
+        element: <HashGenerator />,
+      },
+      {
+        path: Paths.JWTDecoder,
+        element: <JWTDecoder />,
+      },
+      {
+        path: Paths.TimestampConverter,
+        element: <TimestampConverter />,
       },
       {
         path: Paths.SVGToJSX,
