@@ -10,12 +10,16 @@ import { JSONPrettyPrint } from "./components/JSONPrettyPrint";
 import { CookiesToJSON } from "./components/CookiesToJSON";
 import { JSONParser } from "./components/JSONParser";
 import { SignalRNotifier } from "./components/SignalRNotifier";
+import { Base64 } from "./components/Base64";
+import { UUIDGenerator } from "./components/UUIDGenerator";
 
 export const Paths = {
   Root: "/",
   Iframer: "/iframer",
   URLComposer: "/url-composer",
   TokenGen: "/token-generator",
+  Base64: "/base64",
+  UUIDGenerator: "/uuid-generator",
   SVGToJSX: "/svg-converter",
   JSONPrettyPrint: "/json-pretty-print",
   CookiesToJSON: "/cookies-to-json",
@@ -46,6 +50,14 @@ const router = createBrowserRouter([
       {
         path: Paths.TokenGen,
         element: <TokenGen />,
+      },
+      {
+        path: Paths.Base64,
+        element: <Base64 />,
+      },
+      {
+        path: Paths.UUIDGenerator,
+        element: <UUIDGenerator />,
       },
       {
         path: Paths.SVGToJSX,

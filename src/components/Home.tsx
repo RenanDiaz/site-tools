@@ -18,6 +18,8 @@ export const Home: FC = () => {
                   [Paths.Iframer]: "Iframer",
                   [Paths.URLComposer]: "URL Composer",
                   [Paths.TokenGen]: "Token Generator",
+                  [Paths.Base64]: "Base64 Encoder/Decoder",
+                  [Paths.UUIDGenerator]: "UUID Generator",
                   [Paths.SVGToJSX]: "SVG Converter",
                   [Paths.JSONPrettyPrint]: "JSON Pretty Print",
                   [Paths.CookiesToJSON]: "Cookies to JSON",
