@@ -20,6 +20,8 @@ import { StringCaseConverter } from "./components/StringCaseConverter";
 import { RegexTester } from "./components/RegexTester";
 import { ColorConverter } from "./components/ColorConverter";
 import { MarkdownPreview } from "./components/MarkdownPreview";
+import { HTMLEntityEncoder } from "./components/HTMLEntityEncoder";
+import { LoremIpsumGenerator } from "./components/LoremIpsumGenerator";
 import { Paths } from "./paths";
 
 // Re-export for backwards compatibility
@@ -105,6 +107,14 @@ const router = createBrowserRouter([
       {
         path: Paths.MarkdownPreview,
         element: <MarkdownPreview />,
+      },
+      {
+        path: Paths.HTMLEntityEncoder,
+        element: <HTMLEntityEncoder />,
+      },
+      {
+        path: Paths.LoremIpsumGenerator,
+        element: <LoremIpsumGenerator />,
       },
     ],
   },

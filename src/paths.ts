@@ -18,6 +18,8 @@ export const Paths = {
   RegexTester: "/regex-tester",
   ColorConverter: "/color-converter",
   MarkdownPreview: "/markdown-preview",
+  HTMLEntityEncoder: "/html-entity-encoder",
+  LoremIpsumGenerator: "/lorem-ipsum-generator",
 } as const;
 
 export type PathsType = (typeof Paths)[keyof typeof Paths];

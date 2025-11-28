@@ -39,9 +39,9 @@ This document tracks potential enhancements and features to add to the Site Tool
   - COMPLETED: Encode/decode with real-time conversion, swap input/output
   - Location: [src/components/URLEncoder.tsx](src/components/URLEncoder.tsx)
 
-- [ ] **HTML Entity Encoder/Decoder**
-  - Convert special characters to/from HTML entities
-  - Batch conversion
+- [x] **HTML Entity Encoder/Decoder**
+  - COMPLETED: Encode/decode HTML entities, swap input/output, reference table of common entities
+  - Location: [src/components/HTMLEntityEncoder.tsx](src/components/HTMLEntityEncoder.tsx)
 
 ### Data Transformation Tools
 - [ ] **CSV to JSON Converter**
@@ -110,10 +110,9 @@ This document tracks potential enhancements and features to add to the Site Tool
   - Syntax highlighting
   - Ignore whitespace option
 
-- [ ] **Lorem Ipsum Generator**
-  - Paragraphs, sentences, or words
-  - Configurable count
-  - Copy or download
+- [x] **Lorem Ipsum Generator**
+  - COMPLETED: Generate paragraphs/sentences/words, configurable count, info card about Lorem Ipsum
+  - Location: [src/components/LoremIpsumGenerator.tsx](src/components/LoremIpsumGenerator.tsx)
 
 - [x] **Markdown Preview**
   - COMPLETED: Live preview, GitHub-flavored markdown, split/edit/preview modes, copy HTML, DOMPurify sanitization

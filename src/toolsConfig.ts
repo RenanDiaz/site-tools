@@ -142,6 +142,18 @@ export const tools: ToolInfo[] = [
     description: "Live preview of GitHub-flavored markdown",
     category: "converters",
   },
+  {
+    path: Paths.HTMLEntityEncoder,
+    label: "HTML Entity Encoder/Decoder",
+    description: "Convert special characters to/from HTML entities",
+    category: "encoding",
+  },
+  {
+    path: Paths.LoremIpsumGenerator,
+    label: "Lorem Ipsum Generator",
+    description: "Generate placeholder text for mockups",
+    category: "generators",
+  },
 ];
 
 // Helper to get label by path (for Layout navigation)
