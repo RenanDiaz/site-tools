@@ -166,6 +166,12 @@ export const tools: ToolInfo[] = [
     description: "Generate placeholder text for mockups",
     category: "generators",
   },
+  {
+    path: Paths.TextDiffViewer,
+    label: "Text Diff Viewer",
+    description: "Compare two texts with line-by-line highlighting",
+    category: "other",
+  },
 ];
 
 // Helper to get label by path (for Layout navigation)

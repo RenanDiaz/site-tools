@@ -100,11 +100,9 @@ This document tracks potential enhancements and features to add to the Site Tool
   - COMPLETED: 12 case formats (camelCase, PascalCase, snake_case, kebab-case, etc.), real-time conversion
   - Location: [src/components/StringCaseConverter.tsx](src/components/StringCaseConverter.tsx)
 
-- [ ] **Text Diff Viewer**
-  - Side-by-side or inline diff
-  - Line-by-line comparison
-  - Syntax highlighting
-  - Ignore whitespace option
+- [x] **Text Diff Viewer**
+  - COMPLETED: Split and unified view modes, line-by-line comparison with green/red highlighting, ignore whitespace option
+  - Location: [src/components/TextDiffViewer.tsx](src/components/TextDiffViewer.tsx)
 
 - [x] **Lorem Ipsum Generator**
   - COMPLETED: Generate paragraphs/sentences/words, configurable count, info card about Lorem Ipsum

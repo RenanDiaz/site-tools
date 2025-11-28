@@ -22,6 +22,7 @@ export const Paths = {
   LoremIpsumGenerator: "/lorem-ipsum-generator",
   CSVToJSON: "/csv-to-json",
   QRCodeGenerator: "/qr-code-generator",
+  TextDiffViewer: "/text-diff-viewer",
 } as const;
 
 export type PathsType = (typeof Paths)[keyof typeof Paths];
