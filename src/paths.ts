@@ -21,6 +21,7 @@ export const Paths = {
   HTMLEntityEncoder: "/html-entity-encoder",
   LoremIpsumGenerator: "/lorem-ipsum-generator",
   CSVToJSON: "/csv-to-json",
+  QRCodeGenerator: "/qr-code-generator",
 } as const;
 
 export type PathsType = (typeof Paths)[keyof typeof Paths];

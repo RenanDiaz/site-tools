@@ -85,11 +85,9 @@ This document tracks potential enhancements and features to add to the Site Tool
   - COMPLETED: Generate v4 UUIDs with multiple formats (lowercase, uppercase, no hyphens, braces), bulk generation
   - Location: [src/components/UUIDGenerator.tsx](src/components/UUIDGenerator.tsx)
 
-- [ ] **QR Code Generator**
-  - Generate QR codes from text/URLs
-  - Adjustable size
-  - Download as PNG
-  - Custom colors
+- [x] **QR Code Generator**
+  - COMPLETED: Generate QR codes from text/URLs, adjustable size (128-1024px), custom foreground/background colors, error correction levels, download as PNG
+  - Location: [src/components/QRCodeGenerator.tsx](src/components/QRCodeGenerator.tsx)
 
 ### Code Tools
 - [ ] **Code Minifier/Beautifier**

@@ -23,6 +23,7 @@ import { MarkdownPreview } from "./components/MarkdownPreview";
 import { HTMLEntityEncoder } from "./components/HTMLEntityEncoder";
 import { LoremIpsumGenerator } from "./components/LoremIpsumGenerator";
 import { CSVToJSON } from "./components/CSVToJSON";
+import { QRCodeGenerator } from "./components/QRCodeGenerator";
 import { Paths } from "./paths";
 
 // Re-export for backwards compatibility
@@ -120,6 +121,10 @@ const router = createBrowserRouter([
       {
         path: Paths.CSVToJSON,
         element: <CSVToJSON />,
+      },
+      {
+        path: Paths.QRCodeGenerator,
+        element: <QRCodeGenerator />,
       },
     ],
   },

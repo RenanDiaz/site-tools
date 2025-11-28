@@ -64,6 +64,12 @@ export const tools: ToolInfo[] = [
     description: "Generate SHA-1, SHA-256, SHA-384, SHA-512 hashes",
     category: "generators",
   },
+  {
+    path: Paths.QRCodeGenerator,
+    label: "QR Code Generator",
+    description: "Generate QR codes with custom colors and sizes",
+    category: "generators",
+  },
 
   // Converters
   {
