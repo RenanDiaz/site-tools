@@ -19,6 +19,7 @@ import { URLEncoder } from "./components/URLEncoder";
 import { StringCaseConverter } from "./components/StringCaseConverter";
 import { RegexTester } from "./components/RegexTester";
 import { ColorConverter } from "./components/ColorConverter";
+import { MarkdownPreview } from "./components/MarkdownPreview";
 import { Paths } from "./paths";
 
 // Re-export for backwards compatibility
@@ -100,6 +101,10 @@ const router = createBrowserRouter([
       {
         path: Paths.ColorConverter,
         element: <ColorConverter />,
+      },
+      {
+        path: Paths.MarkdownPreview,
+        element: <MarkdownPreview />,
       },
     ],
   },

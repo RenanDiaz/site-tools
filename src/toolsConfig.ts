@@ -136,6 +136,12 @@ export const tools: ToolInfo[] = [
     description: "Convert between HEX, RGB, RGBA, HSL, and HSLA",
     category: "web",
   },
+  {
+    path: Paths.MarkdownPreview,
+    label: "Markdown Preview",
+    description: "Live preview of GitHub-flavored markdown",
+    category: "converters",
+  },
 ];
 
 // Helper to get label by path (for Layout navigation)

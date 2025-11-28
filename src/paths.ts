@@ -17,6 +17,7 @@ export const Paths = {
   SignalRNotifier: "/signalr-notifier",
   RegexTester: "/regex-tester",
   ColorConverter: "/color-converter",
+  MarkdownPreview: "/markdown-preview",
 } as const;
 
 export type PathsType = (typeof Paths)[keyof typeof Paths];

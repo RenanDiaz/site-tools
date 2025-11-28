@@ -115,10 +115,9 @@ This document tracks potential enhancements and features to add to the Site Tool
   - Configurable count
   - Copy or download
 
-- [ ] **Markdown Preview**
-  - Live preview while typing
-  - GitHub-flavored markdown
-  - Export to HTML
+- [x] **Markdown Preview**
+  - COMPLETED: Live preview, GitHub-flavored markdown, split/edit/preview modes, copy HTML, DOMPurify sanitization
+  - Location: [src/components/MarkdownPreview.tsx](src/components/MarkdownPreview.tsx)
 
 ## 🎨 UX Enhancements
 
