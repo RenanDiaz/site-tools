@@ -20,6 +20,7 @@ export const Paths = {
   MarkdownPreview: "/markdown-preview",
   HTMLEntityEncoder: "/html-entity-encoder",
   LoremIpsumGenerator: "/lorem-ipsum-generator",
+  CSVToJSON: "/csv-to-json",
 } as const;
 
 export type PathsType = (typeof Paths)[keyof typeof Paths];

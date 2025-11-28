@@ -44,11 +44,9 @@ This document tracks potential enhancements and features to add to the Site Tool
   - Location: [src/components/HTMLEntityEncoder.tsx](src/components/HTMLEntityEncoder.tsx)
 
 ### Data Transformation Tools
-- [ ] **CSV to JSON Converter**
-  - Parse CSV with header detection
-  - Preview output
-  - Download as JSON file
-  - Handles quoted fields and escaped commas
+- [x] **CSV to JSON Converter**
+  - COMPLETED: Parse CSV with header detection, dynamic type conversion, file upload, download JSON, error reporting
+  - Location: [src/components/CSVToJSON.tsx](src/components/CSVToJSON.tsx)
 
 - [ ] **YAML to JSON Converter**
   - Parse YAML configuration files

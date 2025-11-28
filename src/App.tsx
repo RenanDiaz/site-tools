@@ -22,6 +22,7 @@ import { ColorConverter } from "./components/ColorConverter";
 import { MarkdownPreview } from "./components/MarkdownPreview";
 import { HTMLEntityEncoder } from "./components/HTMLEntityEncoder";
 import { LoremIpsumGenerator } from "./components/LoremIpsumGenerator";
+import { CSVToJSON } from "./components/CSVToJSON";
 import { Paths } from "./paths";
 
 // Re-export for backwards compatibility
@@ -115,6 +116,10 @@ const router = createBrowserRouter([
       {
         path: Paths.LoremIpsumGenerator,
         element: <LoremIpsumGenerator />,
+      },
+      {
+        path: Paths.CSVToJSON,
+        element: <CSVToJSON />,
       },
     ],
   },

@@ -84,6 +84,12 @@ export const tools: ToolInfo[] = [
     description: "Convert SVG markup to React JSX",
     category: "converters",
   },
+  {
+    path: Paths.CSVToJSON,
+    label: "CSV to JSON Converter",
+    description: "Convert CSV data to JSON with header detection",
+    category: "converters",
+  },
 
   // JSON Tools
   {
