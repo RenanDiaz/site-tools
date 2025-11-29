@@ -102,6 +102,12 @@ export const tools: ToolInfo[] = [
     description: "Convert YAML configuration files to JSON",
     category: "converters",
   },
+  {
+    path: Paths.XMLToJSON,
+    label: "XML to JSON Converter",
+    description: "Convert XML documents to JSON with attribute options",
+    category: "converters",
+  },
 
   // JSON Tools
   {

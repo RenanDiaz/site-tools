@@ -26,6 +26,7 @@ import { CSVToJSON } from "./components/CSVToJSON";
 import { QRCodeGenerator } from "./components/QRCodeGenerator";
 import { TextDiffViewer } from "./components/TextDiffViewer";
 import { YAMLToJSON } from "./components/YAMLToJSON";
+import { XMLToJSON } from "./components/XMLToJSON";
 import { Paths } from "./paths";
 
 // Re-export for backwards compatibility
@@ -135,6 +136,10 @@ const router = createBrowserRouter([
       {
         path: Paths.YAMLToJSON,
         element: <YAMLToJSON />,
+      },
+      {
+        path: Paths.XMLToJSON,
+        element: <XMLToJSON />,
       },
     ],
   },

@@ -52,10 +52,9 @@ This document tracks potential enhancements and features to add to the Site Tool
   - COMPLETED: Parse YAML configuration files, file upload, download JSON, detailed error reporting with line numbers, example YAML loader
   - Location: [src/components/YAMLToJSON.tsx](src/components/YAMLToJSON.tsx)
 
-- [ ] **XML to JSON Converter**
-  - Parse XML to JSON structure
-  - Attribute handling options
-  - Pretty print output
+- [x] **XML to JSON Converter**
+  - COMPLETED: Parse XML to JSON, file upload, download JSON, configurable array handling and attribute merging, example XML loader
+  - Location: [src/components/XMLToJSON.tsx](src/components/XMLToJSON.tsx)
 
 - [ ] **JSON Schema Validator**
   - Validate JSON against schemas
