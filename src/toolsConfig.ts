@@ -96,6 +96,12 @@ export const tools: ToolInfo[] = [
     description: "Convert CSV data to JSON with header detection",
     category: "converters",
   },
+  {
+    path: Paths.YAMLToJSON,
+    label: "YAML to JSON Converter",
+    description: "Convert YAML configuration files to JSON",
+    category: "converters",
+  },
 
   // JSON Tools
   {

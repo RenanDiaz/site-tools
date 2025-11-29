@@ -48,10 +48,9 @@ This document tracks potential enhancements and features to add to the Site Tool
   - COMPLETED: Parse CSV with header detection, dynamic type conversion, file upload, download JSON, error reporting
   - Location: [src/components/CSVToJSON.tsx](src/components/CSVToJSON.tsx)
 
-- [ ] **YAML to JSON Converter**
-  - Parse YAML configuration files
-  - Syntax highlighting
-  - Error reporting
+- [x] **YAML to JSON Converter**
+  - COMPLETED: Parse YAML configuration files, file upload, download JSON, detailed error reporting with line numbers, example YAML loader
+  - Location: [src/components/YAMLToJSON.tsx](src/components/YAMLToJSON.tsx)
 
 - [ ] **XML to JSON Converter**
   - Parse XML to JSON structure

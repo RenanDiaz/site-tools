@@ -23,6 +23,7 @@ export const Paths = {
   CSVToJSON: "/csv-to-json",
   QRCodeGenerator: "/qr-code-generator",
   TextDiffViewer: "/text-diff-viewer",
+  YAMLToJSON: "/yaml-to-json",
 } as const;
 
 export type PathsType = (typeof Paths)[keyof typeof Paths];
