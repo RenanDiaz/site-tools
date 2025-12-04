@@ -1,7 +1,10 @@
 import type { ChangeEvent, FC } from "react";
 import { useState, useMemo, useEffect } from "react";
 import { marked } from "marked";
+import { markedHighlight } from "marked-highlight";
+import hljs from "highlight.js";
 import DOMPurify from "dompurify";
+import "highlight.js/styles/github-dark.css";
 import {
   Button,
   ButtonGroup,
@@ -77,7 +80,6 @@ const PreviewContainer = styled.div`
   }
 
   pre {
-    background-color: rgba(110, 118, 129, 0.2);
     padding: 1rem;
     border-radius: 6px;
     overflow-x: auto;
@@ -85,8 +87,11 @@ const PreviewContainer = styled.div`
   }
 
   pre code {
-    background-color: transparent;
     padding: 0;
+  }
+
+  pre code.hljs {
+    background-color: transparent;
   }
 
   blockquote {
@@ -210,7 +215,6 @@ const FullscreenPreview = styled.div`
   }
 
   pre {
-    background-color: rgba(110, 118, 129, 0.2);
     padding: 1rem;
     border-radius: 6px;
     overflow-x: auto;
@@ -218,8 +222,11 @@ const FullscreenPreview = styled.div`
   }
 
   pre code {
-    background-color: transparent;
     padding: 0;
+  }
+
+  pre code.hljs {
+    background-color: transparent;
   }
 
   blockquote {
@@ -344,11 +351,20 @@ function hello() {
 That's it! Start typing to see your markdown rendered below.
 `;
 
-// Configure marked options
-marked.setOptions({
-  gfm: true, // GitHub Flavored Markdown
-  breaks: true, // Convert \n to <br>
-});
+// Configure marked with syntax highlighting
+marked.use(
+  markedHighlight({
+    langPrefix: "hljs language-",
+    highlight(code, lang) {
+      const language = hljs.getLanguage(lang) ? lang : "plaintext";
+      return hljs.highlight(code, { language }).value;
+    },
+  }),
+  {
+    gfm: true, // GitHub Flavored Markdown
+    breaks: true, // Convert \n to <br>
+  }
+);
 
 export const MarkdownPreview: FC = () => {
   const [markdown, setMarkdown] = useState<string>(defaultMarkdown);
