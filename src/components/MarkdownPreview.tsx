@@ -80,6 +80,7 @@ const PreviewContainer = styled.div`
   }
 
   pre {
+    background-color: #0d1117;
     padding: 1rem;
     border-radius: 6px;
     overflow-x: auto;
@@ -88,9 +89,6 @@ const PreviewContainer = styled.div`
 
   pre code {
     padding: 0;
-  }
-
-  pre code.hljs {
     background-color: transparent;
   }
 
@@ -215,6 +213,7 @@ const FullscreenPreview = styled.div`
   }
 
   pre {
+    background-color: #0d1117;
     padding: 1rem;
     border-radius: 6px;
     overflow-x: auto;
@@ -223,9 +222,6 @@ const FullscreenPreview = styled.div`
 
   pre code {
     padding: 0;
-  }
-
-  pre code.hljs {
     background-color: transparent;
   }
 
