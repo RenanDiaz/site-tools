@@ -167,6 +167,12 @@ export const tools: ToolInfo[] = [
     category: "web",
   },
   {
+    path: Paths.CurlToMarkdown,
+    label: "cURL to Markdown",
+    description: "Convert cURL commands to Markdown API documentation",
+    category: "web",
+  },
+  {
     path: Paths.MarkdownPreview,
     label: "Markdown Preview",
     description: "Live preview of GitHub-flavored markdown",

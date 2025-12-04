@@ -26,6 +26,7 @@ export const Paths = {
   YAMLToJSON: "/yaml-to-json",
   XMLToJSON: "/xml-to-json",
   JSONEditor: "/json-editor",
+  CurlToMarkdown: "/curl-to-markdown",
 } as const;
 
 export type PathsType = (typeof Paths)[keyof typeof Paths];

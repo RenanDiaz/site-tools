@@ -33,6 +33,7 @@ const TextDiffViewer = lazy(() => import("./components/TextDiffViewer").then(m =
 const YAMLToJSON = lazy(() => import("./components/YAMLToJSON").then(m => ({ default: m.YAMLToJSON })));
 const XMLToJSON = lazy(() => import("./components/XMLToJSON").then(m => ({ default: m.XMLToJSON })));
 const JSONEditor = lazy(() => import("./components/JSONEditor").then(m => ({ default: m.JSONEditor })));
+const CurlToMarkdown = lazy(() => import("./components/CurlToMarkdown").then(m => ({ default: m.CurlToMarkdown })));
 
 // Loading component for Suspense fallback
 const LoadingFallback: FC = () => (
@@ -156,6 +157,10 @@ const router = createBrowserRouter([
       {
         path: Paths.JSONEditor,
         element: <Suspense fallback={<LoadingFallback />}><JSONEditor /></Suspense>,
+      },
+      {
+        path: Paths.CurlToMarkdown,
+        element: <Suspense fallback={<LoadingFallback />}><CurlToMarkdown /></Suspense>,
       },
     ],
   },
