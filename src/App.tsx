@@ -32,6 +32,7 @@ const QRCodeGenerator = lazy(() => import("./components/QRCodeGenerator").then(m
 const TextDiffViewer = lazy(() => import("./components/TextDiffViewer").then(m => ({ default: m.TextDiffViewer })));
 const YAMLToJSON = lazy(() => import("./components/YAMLToJSON").then(m => ({ default: m.YAMLToJSON })));
 const XMLToJSON = lazy(() => import("./components/XMLToJSON").then(m => ({ default: m.XMLToJSON })));
+const JSONEditor = lazy(() => import("./components/JSONEditor").then(m => ({ default: m.JSONEditor })));
 
 // Loading component for Suspense fallback
 const LoadingFallback: FC = () => (
@@ -151,6 +152,10 @@ const router = createBrowserRouter([
       {
         path: Paths.XMLToJSON,
         element: <Suspense fallback={<LoadingFallback />}><XMLToJSON /></Suspense>,
+      },
+      {
+        path: Paths.JSONEditor,
+        element: <Suspense fallback={<LoadingFallback />}><JSONEditor /></Suspense>,
       },
     ],
   },

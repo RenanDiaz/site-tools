@@ -25,6 +25,7 @@ export const Paths = {
   TextDiffViewer: "/text-diff-viewer",
   YAMLToJSON: "/yaml-to-json",
   XMLToJSON: "/xml-to-json",
+  JSONEditor: "/json-editor",
 } as const;
 
 export type PathsType = (typeof Paths)[keyof typeof Paths];

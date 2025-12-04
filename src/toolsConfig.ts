@@ -128,6 +128,12 @@ export const tools: ToolInfo[] = [
     description: "Parse and validate JSON data",
     category: "json",
   },
+  {
+    path: Paths.JSONEditor,
+    label: "JSON Editor",
+    description: "Edit JSON by adding or removing fields and array items",
+    category: "json",
+  },
 
   // Web Development
   {
