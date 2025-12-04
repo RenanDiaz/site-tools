@@ -373,6 +373,7 @@ export const JSONEditor: FC = () => {
   const [jsonInput, setJsonInput] = useState<string>("");
   const [jsonData, setJsonData] = useState<JsonValue | null>(null);
   const [error, setError] = useState<string>("");
+  const [prettyPrint, setPrettyPrint] = useState<boolean>(true);
   const [tooltipOpen, setTooltipOpen] = useRevertableState<boolean>(false, 2000);
 
   const handleParse = () => {
@@ -487,7 +488,8 @@ export const JSONEditor: FC = () => {
 
   const handleCopy = () => {
     if (jsonData !== null) {
-      navigator.clipboard.writeText(JSON.stringify(jsonData, null, 2));
+      const output = prettyPrint ? JSON.stringify(jsonData, null, 2) : JSON.stringify(jsonData);
+      navigator.clipboard.writeText(output);
       setTooltipOpen(true);
     }
   };
@@ -561,7 +563,17 @@ export const JSONEditor: FC = () => {
             <CardHeader>
               <Row className="align-items-center">
                 <Col>Output</Col>
-                <Col xs="auto">
+                <Col xs="auto" className="d-flex align-items-center gap-2">
+                  <Input
+                    type="checkbox"
+                    checked={prettyPrint}
+                    onChange={(e) => setPrettyPrint(e.target.checked)}
+                    id="prettyPrintCheckbox"
+                    className="me-1"
+                  />
+                  <label htmlFor="prettyPrintCheckbox" className="mb-0 small">
+                    Pretty Print
+                  </label>
                   <Button color="primary" onClick={handleCopy} id="jsonEditorCopyTooltip">
                     <CopyIcon />
                   </Button>
@@ -577,7 +589,7 @@ export const JSONEditor: FC = () => {
             </CardHeader>
             <CardBody style={{ maxHeight: 400, overflowY: "auto" }}>
               <pre style={{ margin: 0 }}>
-                <code>{JSON.stringify(jsonData, null, 2)}</code>
+                <code>{prettyPrint ? JSON.stringify(jsonData, null, 2) : JSON.stringify(jsonData)}</code>
               </pre>
             </CardBody>
           </Card>
@@ -596,6 +608,7 @@ export const JSONEditor: FC = () => {
             <li>Remove items from arrays</li>
             <li>Edit primitive values (strings, numbers, booleans)</li>
             <li>Collapse/expand nested objects and arrays</li>
+            <li>Toggle pretty print or compact output</li>
             <li>Copy modified JSON to clipboard</li>
           </ul>
         </CardBody>
