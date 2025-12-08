@@ -70,6 +70,12 @@ export const tools: ToolInfo[] = [
     description: "Generate QR codes with custom colors and sizes",
     category: "generators",
   },
+  {
+    path: Paths.QRReader,
+    label: "QR Code Reader",
+    description: "Decode QR codes from images or camera",
+    category: "converters",
+  },
 
   // Converters
   {

@@ -34,6 +34,7 @@ const YAMLToJSON = lazy(() => import("./components/YAMLToJSON").then(m => ({ def
 const XMLToJSON = lazy(() => import("./components/XMLToJSON").then(m => ({ default: m.XMLToJSON })));
 const JSONEditor = lazy(() => import("./components/JSONEditor").then(m => ({ default: m.JSONEditor })));
 const CurlToMarkdown = lazy(() => import("./components/CurlToMarkdown").then(m => ({ default: m.CurlToMarkdown })));
+const QRReader = lazy(() => import("./components/QRReader").then(m => ({ default: m.QRReader })));
 
 // Loading component for Suspense fallback
 const LoadingFallback: FC = () => (
@@ -161,6 +162,10 @@ const router = createBrowserRouter([
       {
         path: Paths.CurlToMarkdown,
         element: <Suspense fallback={<LoadingFallback />}><CurlToMarkdown /></Suspense>,
+      },
+      {
+        path: Paths.QRReader,
+        element: <Suspense fallback={<LoadingFallback />}><QRReader /></Suspense>,
       },
     ],
   },

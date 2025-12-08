@@ -27,6 +27,7 @@ export const Paths = {
   XMLToJSON: "/xml-to-json",
   JSONEditor: "/json-editor",
   CurlToMarkdown: "/curl-to-markdown",
+  QRReader: "/qr-reader",
 } as const;
 
 export type PathsType = (typeof Paths)[keyof typeof Paths];
