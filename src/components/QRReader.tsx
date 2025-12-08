@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import jsQR from "jsqr";
 import {
   Alert,
@@ -31,6 +31,47 @@ export const QRReader: FC = () => {
     const code = jsQR(imageData.data, imageData.width, imageData.height);
     return code?.data || null;
   }, []);
+
+  const stopCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+
+    setIsScanning(false);
+  }, []);
+
+  const scanFrame = useCallback(() => {
+    if (!videoRef.current || !canvasRef.current) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) return;
+
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const decoded = processImage(imageData);
+
+      if (decoded) {
+        setResult(decoded);
+        stopCamera();
+        return;
+      }
+    }
+
+    animationRef.current = requestAnimationFrame(scanFrame);
+  }, [processImage, stopCamera]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -79,58 +120,20 @@ export const QRReader: FC = () => {
       });
 
       streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-        setIsScanning(true);
-        scanFrame();
-      }
+      setIsScanning(true);
     } catch {
       setError("Could not access camera. Please ensure camera permissions are granted.");
     }
   };
 
-  const stopCamera = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
+  // Attach stream to video element once it's rendered
+  useEffect(() => {
+    if (isScanning && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play();
+      scanFrame();
     }
-
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-      animationRef.current = null;
-    }
-
-    setIsScanning(false);
-  }, []);
-
-  const scanFrame = useCallback(() => {
-    if (!videoRef.current || !canvasRef.current) return;
-
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) return;
-
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const decoded = processImage(imageData);
-
-      if (decoded) {
-        setResult(decoded);
-        stopCamera();
-        return;
-      }
-    }
-
-    animationRef.current = requestAnimationFrame(scanFrame);
-  }, [processImage, stopCamera]);
+  }, [isScanning, scanFrame]);
 
   const handleCopyClick = () => {
     navigator.clipboard.writeText(result);
