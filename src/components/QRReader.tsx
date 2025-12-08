@@ -1,8 +1,9 @@
 import type { FC } from "react";
 import { useRef, useState, useCallback, useEffect } from "react";
-import jsQR from "jsqr";
+import jsQR, { type QRCode } from "jsqr";
 import {
   Alert,
+  Badge,
   Button,
   Card,
   CardBody,
@@ -15,8 +16,13 @@ import {
 } from "reactstrap";
 import { useRevertableState } from "../utility/useRevertableState";
 
+interface QRInfo {
+  data: string;
+  version: number;
+}
+
 export const QRReader: FC = () => {
-  const [result, setResult] = useState<string>("");
+  const [qrInfo, setQrInfo] = useState<QRInfo | null>(null);
   const [error, setError] = useState<string>("");
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [tooltipOpen, setTooltipOpen] = useRevertableState<boolean>(false, 2000);
@@ -27,9 +33,8 @@ export const QRReader: FC = () => {
   const streamRef = useRef<MediaStream | null>(null);
   const animationRef = useRef<number | null>(null);
 
-  const processImage = useCallback((imageData: ImageData): string | null => {
-    const code = jsQR(imageData.data, imageData.width, imageData.height);
-    return code?.data || null;
+  const processImage = useCallback((imageData: ImageData): QRCode | null => {
+    return jsQR(imageData.data, imageData.width, imageData.height);
   }, []);
 
   const stopCamera = useCallback(() => {
@@ -61,10 +66,10 @@ export const QRReader: FC = () => {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const decoded = processImage(imageData);
+      const code = processImage(imageData);
 
-      if (decoded) {
-        setResult(decoded);
+      if (code) {
+        setQrInfo({ data: code.data, version: code.version });
         stopCamera();
         return;
       }
@@ -78,7 +83,7 @@ export const QRReader: FC = () => {
     if (!file) return;
 
     setError("");
-    setResult("");
+    setQrInfo(null);
 
     const img = new Image();
     img.onload = () => {
@@ -94,10 +99,10 @@ export const QRReader: FC = () => {
 
       ctx.drawImage(img, 0, 0);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const decoded = processImage(imageData);
+      const code = processImage(imageData);
 
-      if (decoded) {
-        setResult(decoded);
+      if (code) {
+        setQrInfo({ data: code.data, version: code.version });
       } else {
         setError("No QR code found in image");
       }
@@ -112,7 +117,7 @@ export const QRReader: FC = () => {
 
   const startCamera = async () => {
     setError("");
-    setResult("");
+    setQrInfo(null);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -136,12 +141,14 @@ export const QRReader: FC = () => {
   }, [isScanning, scanFrame]);
 
   const handleCopyClick = () => {
-    navigator.clipboard.writeText(result);
-    setTooltipOpen(true);
+    if (qrInfo) {
+      navigator.clipboard.writeText(qrInfo.data);
+      setTooltipOpen(true);
+    }
   };
 
   const handleClear = () => {
-    setResult("");
+    setQrInfo(null);
     setError("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -155,6 +162,10 @@ export const QRReader: FC = () => {
     } catch {
       return false;
     }
+  };
+
+  const getModuleSize = (version: number): number => {
+    return 21 + (version - 1) * 4;
   };
 
   return (
@@ -227,18 +238,23 @@ export const QRReader: FC = () => {
         </Alert>
       )}
 
-      {result && (
+      {qrInfo && (
         <Card className="mb-3">
           <CardHeader>
             <Row className="align-items-center">
-              <Col>Decoded Result</Col>
+              <Col className="d-flex align-items-center gap-2">
+                Decoded Result
+                <Badge color="info" pill>
+                  Version {qrInfo.version} ({getModuleSize(qrInfo.version)}×{getModuleSize(qrInfo.version)})
+                </Badge>
+              </Col>
               <Col xs="auto" className="d-flex gap-2">
-                {isUrl(result) && (
+                {isUrl(qrInfo.data) && (
                   <Button
                     color="primary"
                     size="sm"
                     tag="a"
-                    href={result}
+                    href={qrInfo.data}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -265,7 +281,7 @@ export const QRReader: FC = () => {
                 borderRadius: "4px",
               }}
             >
-              {result}
+              {qrInfo.data}
             </pre>
           </CardBody>
         </Card>
