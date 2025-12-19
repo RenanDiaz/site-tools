@@ -13,6 +13,7 @@ export type ToolCategory =
   | "generators"
   | "converters"
   | "web"
+  | "games"
   | "other";
 
 export const categoryLabels: Record<ToolCategory, string> = {
@@ -21,6 +22,7 @@ export const categoryLabels: Record<ToolCategory, string> = {
   generators: "Generators",
   converters: "Converters",
   web: "Web Development",
+  games: "Games",
   other: "Other Tools",
 };
 
@@ -202,6 +204,14 @@ export const tools: ToolInfo[] = [
     description: "Compare two texts with line-by-line highlighting",
     category: "other",
   },
+
+  // Games
+  {
+    path: Paths.HedbanzGame,
+    label: "Hedbanz - Adivina Quién",
+    description: "Juego de adivinanzas donde los demás dan pistas sobre un personaje",
+    category: "games",
+  },
 ];
 
 // Helper to get label by path (for Layout navigation)
@@ -219,6 +229,7 @@ export const getToolsByCategory = (): Record<ToolCategory, ToolInfo[]> => {
     generators: [],
     converters: [],
     web: [],
+    games: [],
     other: [],
   };
 
