@@ -404,9 +404,11 @@ export const HedbanzGame: FC = () => {
     getRandomItem();
   };
 
-  const handleReveal = () => {
-    setIsRevealed(true);
-    stopTimer();
+  const toggleReveal = () => {
+    if (!isRevealed) {
+      stopTimer();
+    }
+    setIsRevealed(!isRevealed);
   };
 
   const handleReset = () => {
@@ -585,9 +587,9 @@ export const HedbanzGame: FC = () => {
         )}
 
         <GameControls>
-          {!isRevealed && currentItem && (
-            <Button color="warning" size="lg" onClick={handleReveal}>
-              Revelar
+          {currentItem && (
+            <Button color="warning" size="lg" onClick={toggleReveal}>
+              {isRevealed ? "Ocultar" : "Revelar"}
             </Button>
           )}
           <Button
