@@ -405,9 +405,6 @@ export const HedbanzGame: FC = () => {
   };
 
   const toggleReveal = () => {
-    if (!isRevealed) {
-      stopTimer();
-    }
     setIsRevealed(!isRevealed);
   };
 
