@@ -130,12 +130,17 @@ const parseCurl = (curlCommand: string): ParsedCurl | null => {
 const generateMarkdown = (
   parsed: ParsedCurl,
   response: string | null,
-  includeResponse: boolean
+  includeResponse: boolean,
+  statusCode: string | null
 ): string => {
   let markdown = `### ${parsed.method} ${parsed.path}\n`;
 
   if (parsed.body) {
     markdown += `\n**Body**\n\`\`\`json\n${parsed.body}\n\`\`\`\n`;
+  }
+
+  if (includeResponse && statusCode) {
+    markdown += `\n**Status Code:** ${statusCode}\n`;
   }
 
   if (includeResponse && response) {
@@ -155,6 +160,7 @@ const generateMarkdown = (
 export const CurlToMarkdown: FC = () => {
   const [curlInput, setCurlInput] = useState<string>("");
   const [responseInput, setResponseInput] = useState<string>("");
+  const [statusCode, setStatusCode] = useState<string>("");
   const [includeResponse, setIncludeResponse] = useState<boolean>(false);
   const [output, setOutput] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -184,7 +190,8 @@ export const CurlToMarkdown: FC = () => {
     const markdown = generateMarkdown(
       parsed,
       responseInput.trim() || null,
-      includeResponse
+      includeResponse,
+      statusCode.trim() || null
     );
     setOutput(markdown);
   };
@@ -203,6 +210,7 @@ export const CurlToMarkdown: FC = () => {
   -H 'Origin: http://localhost:6050' \\
   --data-raw '{"account_number":"19920326","verifiable_account_number":false,"templateId":2,"Template":1}'`;
     setCurlInput(example);
+    setStatusCode("200 OK");
     setResponseInput('{"created": true, "id": 12345}');
     setIncludeResponse(true);
   };
@@ -240,17 +248,29 @@ export const CurlToMarkdown: FC = () => {
       </FormGroup>
 
       {includeResponse && (
-        <FormGroup>
-          <Label for="responseInput">Response (JSON)</Label>
-          <StyledTextarea
-            type="textarea"
-            id="responseInput"
-            rows={5}
-            value={responseInput}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setResponseInput(e.target.value)}
-            placeholder='{"created": true}'
-          />
-        </FormGroup>
+        <>
+          <FormGroup>
+            <Label for="statusCode">Status Code</Label>
+            <Input
+              type="text"
+              id="statusCode"
+              value={statusCode}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStatusCode(e.target.value)}
+              placeholder="200 OK"
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="responseInput">Response (JSON)</Label>
+            <StyledTextarea
+              type="textarea"
+              id="responseInput"
+              rows={5}
+              value={responseInput}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setResponseInput(e.target.value)}
+              placeholder='{"created": true}'
+            />
+          </FormGroup>
+        </>
       )}
 
       <FormGroup className="d-flex gap-2 flex-wrap">
@@ -298,7 +318,7 @@ export const CurlToMarkdown: FC = () => {
             <li>Extracts HTTP method and endpoint path from cURL</li>
             <li>Parses and formats JSON request body</li>
             <li>Strips browser-generated headers (cookies, user-agent, etc.)</li>
-            <li>Optional response section for complete documentation</li>
+            <li>Optional response section with status code for complete documentation</li>
             <li>Copy formatted Markdown to clipboard</li>
           </ul>
         </CardBody>
