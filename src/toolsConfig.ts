@@ -209,7 +209,7 @@ export const tools: ToolInfo[] = [
   {
     path: Paths.PDFEditor,
     label: "PDF Editor",
-    description: "Merge, split, reorder, rotate, and delete PDF pages",
+    description: "Merge, reorder, rotate, annotate, stamp, and convert PDF pages",
     category: "document",
   },
 ];
