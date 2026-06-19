@@ -28,6 +28,7 @@ export const Paths = {
   JSONEditor: "/json-editor",
   CurlToMarkdown: "/curl-to-markdown",
   QRReader: "/qr-reader",
+  PDFEditor: "/pdf-editor",
 } as const;
 
 export type PathsType = (typeof Paths)[keyof typeof Paths];

@@ -13,6 +13,7 @@ export type ToolCategory =
   | "generators"
   | "converters"
   | "web"
+  | "document"
   | "other";
 
 export const categoryLabels: Record<ToolCategory, string> = {
@@ -21,6 +22,7 @@ export const categoryLabels: Record<ToolCategory, string> = {
   generators: "Generators",
   converters: "Converters",
   web: "Web Development",
+  document: "Document Tools",
   other: "Other Tools",
 };
 
@@ -202,6 +204,14 @@ export const tools: ToolInfo[] = [
     description: "Compare two texts with line-by-line highlighting",
     category: "other",
   },
+
+  // Document Tools
+  {
+    path: Paths.PDFEditor,
+    label: "PDF Editor",
+    description: "Merge, split, reorder, rotate, and delete PDF pages",
+    category: "document",
+  },
 ];
 
 // Helper to get label by path (for Layout navigation)
@@ -219,6 +229,7 @@ export const getToolsByCategory = (): Record<ToolCategory, ToolInfo[]> => {
     generators: [],
     converters: [],
     web: [],
+    document: [],
     other: [],
   };
 

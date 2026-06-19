@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardBody, Col, Row } from "reactstrap";
 import { getToolsByCategory, categoryLabels, type ToolCategory } from "../toolsConfig";
 
-const categoryOrder: ToolCategory[] = ["generators", "encoding", "converters", "json", "web", "other"];
+const categoryOrder: ToolCategory[] = ["generators", "encoding", "converters", "json", "web", "document", "other"];
 
 export const Home: FC = () => {
   const toolsByCategory = getToolsByCategory();
