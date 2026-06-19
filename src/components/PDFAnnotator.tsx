@@ -18,7 +18,20 @@ import type { Annotation, Point } from "./pdfEditorTypes";
 // annotation coordinates remain in page-space points regardless of this value.
 const DISPLAY_WIDTH = 680;
 
-type Tool = "select" | "text" | "draw" | "highlight" | "signature";
+type Tool = "select" | "text" | "draw" | "rect" | "ellipse" | "highlight" | "signature";
+
+// Tools that are created by dragging a bounding box on the page.
+const BOX_TOOLS: Tool[] = ["rect", "ellipse", "highlight"];
+
+const TOOL_LABELS: Record<Tool, string> = {
+  select: "Select",
+  text: "Text",
+  draw: "Draw",
+  rect: "Rectangle",
+  ellipse: "Circle",
+  highlight: "Highlight",
+  signature: "Signature",
+};
 
 interface PDFAnnotatorProps {
   isOpen: boolean;
@@ -48,6 +61,7 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
   const [color, setColor] = useState<string>("#ff0000");
   const [lineWidth, setLineWidth] = useState<number>(2);
   const [fontSize, setFontSize] = useState<number>(16);
+  const [fill, setFill] = useState<boolean>(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const [scale, setScale] = useState<number>(1); // CSS px per PDF point
@@ -153,7 +167,7 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
       setDraftPoints([p]);
       return;
     }
-    if (tool === "highlight") {
+    if (BOX_TOOLS.includes(tool)) {
       drawingRef.current = true;
       (e.target as Element).setPointerCapture?.(e.pointerId);
       rectStart.current = p;
@@ -190,7 +204,7 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
     if (tool === "draw" && drawingRef.current) {
       const p = toPoint(e.clientX, e.clientY);
       setDraftPoints((prev) => (prev ? [...prev, p] : [p]));
-    } else if (tool === "highlight" && drawingRef.current && rectStart.current) {
+    } else if (BOX_TOOLS.includes(tool) && drawingRef.current && rectStart.current) {
       const p = toPoint(e.clientX, e.clientY);
       const s = rectStart.current;
       setDraftRect({
@@ -213,14 +227,22 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
         ]);
       }
       setDraftPoints(null);
-    } else if (tool === "highlight" && drawingRef.current) {
+    } else if (BOX_TOOLS.includes(tool) && drawingRef.current) {
       drawingRef.current = false;
       if (draftRect && draftRect.w > 2 && draftRect.h > 2) {
         const id = crypto.randomUUID();
-        setAnnotations((prev) => [
-          ...prev,
-          { id, type: "highlight", ...draftRect, color, opacity: 0.4 },
-        ]);
+        if (tool === "highlight") {
+          setAnnotations((prev) => [
+            ...prev,
+            { id, type: "highlight", ...draftRect, color, opacity: 0.4 },
+          ]);
+        } else {
+          setAnnotations((prev) => [
+            ...prev,
+            { id, type: tool as "rect" | "ellipse", ...draftRect, color, lineWidth, fill },
+          ]);
+        }
+        setSelectedId(id);
       }
       setDraftRect(null);
       rectStart.current = null;
@@ -323,13 +345,13 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
       <ModalBody>
         <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
           <ButtonGroup size="sm">
-            {(["select", "text", "draw", "highlight"] as Tool[]).map((t) => (
+            {(["select", "text", "draw", "rect", "ellipse", "highlight"] as Tool[]).map((t) => (
               <Button
                 key={t}
                 color={tool === t ? "primary" : "outline-secondary"}
                 onClick={() => setTool(t)}
               >
-                {t === "select" ? "Select" : t.charAt(0).toUpperCase() + t.slice(1)}
+                {TOOL_LABELS[t]}
               </Button>
             ))}
           </ButtonGroup>
@@ -340,7 +362,7 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
               value={color}
               onChange={(e) => {
                 setColor(e.target.value);
-                if (selected && (selected.type === "text" || selected.type === "draw" || selected.type === "highlight")) {
+                if (selected && selected.type !== "signature") {
                   updateAnnotation(selected.id, { color: e.target.value } as Partial<Annotation>);
                 }
               }}
@@ -354,10 +376,35 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
               min={1}
               max={20}
               value={lineWidth}
-              onChange={(e) => setLineWidth(Number(e.target.value))}
+              onChange={(e) => {
+                setLineWidth(Number(e.target.value));
+                if (
+                  selected &&
+                  (selected.type === "draw" || selected.type === "rect" || selected.type === "ellipse")
+                ) {
+                  updateAnnotation(selected.id, { lineWidth: Number(e.target.value) } as Partial<Annotation>);
+                }
+              }}
               bsSize="sm"
               style={{ width: "64px" }}
             />
+          </Label>
+          <Label className="mb-0 d-flex align-items-center gap-1">
+            <Input
+              type="checkbox"
+              checked={
+                selected && (selected.type === "rect" || selected.type === "ellipse")
+                  ? selected.fill
+                  : fill
+              }
+              onChange={(e) => {
+                setFill(e.target.checked);
+                if (selected && (selected.type === "rect" || selected.type === "ellipse")) {
+                  updateAnnotation(selected.id, { fill: e.target.checked } as Partial<Annotation>);
+                }
+              }}
+            />
+            <span className="text-muted small">Fill</span>
           </Label>
           <Label className="mb-0 d-flex align-items-center gap-1">
             <span className="text-muted small">Font</span>
@@ -433,52 +480,166 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
               </div>
             )}
 
-            {/* Vector annotations (draw + highlight + in-progress drafts) */}
+            {/* Every annotation is rendered in creation order with an explicit
+                z-index so freehand strokes and shapes drawn over earlier text,
+                signatures or other annotations always appear on top — matching
+                the order pdf-lib paints them on export. */}
+            {annotations.map((a, index) => {
+              const vectorEvents: React.CSSProperties = {
+                pointerEvents: tool === "select" ? "auto" : "none",
+              };
+              const isSel = selectedId === a.id;
+
+              if (a.type === "text") {
+                return (
+                  <div
+                    key={a.id}
+                    onPointerDown={(e) => beginDrag(e, a)}
+                    style={{
+                      position: "absolute",
+                      zIndex: index + 1,
+                      left: a.x * scale,
+                      top: a.y * scale,
+                      color: a.color,
+                      fontSize: a.fontSize * scale,
+                      lineHeight: 1,
+                      whiteSpace: "pre",
+                      fontFamily: "Helvetica, Arial, sans-serif",
+                      pointerEvents: tool === "select" ? "auto" : "none",
+                      cursor: tool === "select" ? "move" : cursor,
+                      outline: isSel ? "1px dashed #0d6efd" : "none",
+                    }}
+                  >
+                    {a.text || " "}
+                  </div>
+                );
+              }
+
+              if (a.type === "signature") {
+                return (
+                  <img
+                    key={a.id}
+                    src={a.dataUrl}
+                    alt="signature"
+                    draggable={false}
+                    onPointerDown={(e) => beginDrag(e, a)}
+                    style={{
+                      position: "absolute",
+                      zIndex: index + 1,
+                      left: a.x * scale,
+                      top: a.y * scale,
+                      width: a.w * scale,
+                      height: a.h * scale,
+                      pointerEvents: tool === "select" ? "auto" : "none",
+                      cursor: tool === "select" ? "move" : cursor,
+                      outline: isSel ? "1px dashed #0d6efd" : "none",
+                    }}
+                  />
+                );
+              }
+
+              // Vector annotations (draw / highlight / rect / ellipse) each live
+              // in their own full-surface SVG so they can be layered by z-index.
+              return (
+                <svg
+                  key={a.id}
+                  width="100%"
+                  height="100%"
+                  style={{ position: "absolute", inset: 0, zIndex: index + 1, pointerEvents: "none" }}
+                >
+                  {a.type === "highlight" ? (
+                    <rect
+                      x={a.x * scale}
+                      y={a.y * scale}
+                      width={a.w * scale}
+                      height={a.h * scale}
+                      fill={a.color}
+                      fillOpacity={a.opacity}
+                      stroke={isSel ? "#0d6efd" : "none"}
+                      strokeWidth={isSel ? 2 : 0}
+                      style={vectorEvents}
+                      onPointerDown={(e) => beginDrag(e, a)}
+                    />
+                  ) : a.type === "draw" ? (
+                    <polyline
+                      points={a.points.map((p) => `${p.x * scale},${p.y * scale}`).join(" ")}
+                      fill="none"
+                      stroke={a.color}
+                      strokeWidth={a.lineWidth * scale}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      opacity={isSel ? 0.7 : 1}
+                      style={vectorEvents}
+                      onPointerDown={(e) => beginDrag(e, a)}
+                    />
+                  ) : a.type === "rect" ? (
+                    <rect
+                      x={a.x * scale}
+                      y={a.y * scale}
+                      width={a.w * scale}
+                      height={a.h * scale}
+                      fill={a.fill ? a.color : "none"}
+                      stroke={a.color}
+                      strokeWidth={a.lineWidth * scale}
+                      strokeDasharray={isSel ? "4 3" : undefined}
+                      style={vectorEvents}
+                      onPointerDown={(e) => beginDrag(e, a)}
+                    />
+                  ) : (
+                    <ellipse
+                      cx={(a.x + a.w / 2) * scale}
+                      cy={(a.y + a.h / 2) * scale}
+                      rx={(a.w / 2) * scale}
+                      ry={(a.h / 2) * scale}
+                      fill={a.fill ? a.color : "none"}
+                      stroke={a.color}
+                      strokeWidth={a.lineWidth * scale}
+                      strokeDasharray={isSel ? "4 3" : undefined}
+                      style={vectorEvents}
+                      onPointerDown={(e) => beginDrag(e, a)}
+                    />
+                  )}
+                </svg>
+              );
+            })}
+
+            {/* In-progress drafts always render on top while drawing. */}
             <svg
               width="100%"
               height="100%"
-              style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+              style={{ position: "absolute", inset: 0, zIndex: annotations.length + 1, pointerEvents: "none" }}
             >
-              {annotations.map((a) =>
-                a.type === "highlight" ? (
+              {draftRect &&
+                (tool === "highlight" ? (
                   <rect
-                    key={a.id}
-                    x={a.x * scale}
-                    y={a.y * scale}
-                    width={a.w * scale}
-                    height={a.h * scale}
-                    fill={a.color}
-                    fillOpacity={a.opacity}
-                    stroke={selectedId === a.id ? "#0d6efd" : "none"}
-                    strokeWidth={selectedId === a.id ? 2 : 0}
-                    style={{ pointerEvents: tool === "select" ? "auto" : "none" }}
-                    onPointerDown={(e) => beginDrag(e, a)}
+                    x={draftRect.x * scale}
+                    y={draftRect.y * scale}
+                    width={draftRect.w * scale}
+                    height={draftRect.h * scale}
+                    fill={color}
+                    fillOpacity={0.4}
                   />
-                ) : a.type === "draw" ? (
-                  <polyline
-                    key={a.id}
-                    points={a.points.map((p) => `${p.x * scale},${p.y * scale}`).join(" ")}
-                    fill="none"
-                    stroke={a.color}
-                    strokeWidth={a.lineWidth * scale}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    opacity={selectedId === a.id ? 0.7 : 1}
-                    style={{ pointerEvents: tool === "select" ? "auto" : "none" }}
-                    onPointerDown={(e) => beginDrag(e, a)}
+                ) : tool === "ellipse" ? (
+                  <ellipse
+                    cx={(draftRect.x + draftRect.w / 2) * scale}
+                    cy={(draftRect.y + draftRect.h / 2) * scale}
+                    rx={(draftRect.w / 2) * scale}
+                    ry={(draftRect.h / 2) * scale}
+                    fill={fill ? color : "none"}
+                    stroke={color}
+                    strokeWidth={lineWidth * scale}
                   />
-                ) : null
-              )}
-              {draftRect && (
-                <rect
-                  x={draftRect.x * scale}
-                  y={draftRect.y * scale}
-                  width={draftRect.w * scale}
-                  height={draftRect.h * scale}
-                  fill={color}
-                  fillOpacity={0.4}
-                />
-              )}
+                ) : (
+                  <rect
+                    x={draftRect.x * scale}
+                    y={draftRect.y * scale}
+                    width={draftRect.w * scale}
+                    height={draftRect.h * scale}
+                    fill={fill ? color : "none"}
+                    stroke={color}
+                    strokeWidth={lineWidth * scale}
+                  />
+                ))}
               {draftPoints && draftPoints.length > 1 && (
                 <polyline
                   points={draftPoints.map((p) => `${p.x * scale},${p.y * scale}`).join(" ")}
@@ -490,49 +651,6 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
                 />
               )}
             </svg>
-
-            {/* Text + signature annotations as positioned elements */}
-            {annotations.map((a) =>
-              a.type === "text" ? (
-                <div
-                  key={a.id}
-                  onPointerDown={(e) => beginDrag(e, a)}
-                  style={{
-                    position: "absolute",
-                    left: a.x * scale,
-                    top: a.y * scale,
-                    color: a.color,
-                    fontSize: a.fontSize * scale,
-                    lineHeight: 1,
-                    whiteSpace: "pre",
-                    fontFamily: "Helvetica, Arial, sans-serif",
-                    pointerEvents: tool === "select" ? "auto" : "none",
-                    cursor: tool === "select" ? "move" : cursor,
-                    outline: selectedId === a.id ? "1px dashed #0d6efd" : "none",
-                  }}
-                >
-                  {a.text || " "}
-                </div>
-              ) : a.type === "signature" ? (
-                <img
-                  key={a.id}
-                  src={a.dataUrl}
-                  alt="signature"
-                  draggable={false}
-                  onPointerDown={(e) => beginDrag(e, a)}
-                  style={{
-                    position: "absolute",
-                    left: a.x * scale,
-                    top: a.y * scale,
-                    width: a.w * scale,
-                    height: a.h * scale,
-                    pointerEvents: tool === "select" ? "auto" : "none",
-                    cursor: tool === "select" ? "move" : cursor,
-                    outline: selectedId === a.id ? "1px dashed #0d6efd" : "none",
-                  }}
-                />
-              ) : null
-            )}
           </div>
         </div>
 

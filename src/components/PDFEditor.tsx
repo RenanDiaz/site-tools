@@ -403,6 +403,28 @@ export const PDFEditor: FC = () => {
           color: rgb(r, g, b),
         });
       }
+    } else if (ann.type === "rect") {
+      const { r, g, b } = hexToRgb01(ann.color);
+      page.drawRectangle({
+        x: ann.x,
+        y: height - ann.y - ann.h,
+        width: ann.w,
+        height: ann.h,
+        borderColor: rgb(r, g, b),
+        borderWidth: ann.lineWidth,
+        ...(ann.fill ? { color: rgb(r, g, b) } : {}),
+      });
+    } else if (ann.type === "ellipse") {
+      const { r, g, b } = hexToRgb01(ann.color);
+      page.drawEllipse({
+        x: ann.x + ann.w / 2,
+        y: height - ann.y - ann.h / 2,
+        xScale: ann.w / 2,
+        yScale: ann.h / 2,
+        borderColor: rgb(r, g, b),
+        borderWidth: ann.lineWidth,
+        ...(ann.fill ? { color: rgb(r, g, b) } : {}),
+      });
     } else if (ann.type === "signature") {
       let img = imageCache.get(ann.dataUrl);
       if (!img) {
@@ -999,7 +1021,7 @@ export const PDFEditor: FC = () => {
             <li><strong>Reorder:</strong> Drag pages, or use the ←/→ buttons</li>
             <li><strong>Rotate:</strong> Turn individual pages in 90° steps</li>
             <li><strong>Convert:</strong> Import PNG/JPG as pages, or download any page as an image</li>
-            <li><strong>Annotate:</strong> Add text, freehand drawing, highlights and signatures</li>
+            <li><strong>Annotate:</strong> Add text, freehand drawing, rectangles, circles, highlights and signatures</li>
             <li><strong>Stamp:</strong> Add page numbers and a text watermark</li>
             <li><strong>Metadata:</strong> Edit the document title, author, keywords and more</li>
           </ul>
