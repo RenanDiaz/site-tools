@@ -40,6 +40,21 @@ export interface HighlightAnnotation {
   opacity: number;
 }
 
+// A simple geometric shape (rectangle or ellipse) defined by a bounding box.
+// `fill` toggles between a filled shape and an outline-only one; `color` is
+// used for both the outline and (when filled) the fill.
+export interface ShapeAnnotation {
+  id: string;
+  type: "rect" | "ellipse";
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  color: string;
+  lineWidth: number;
+  fill: boolean;
+}
+
 // A raster stamp (drawn or uploaded signature, logo, etc.) embedded as PNG.
 export interface ImageAnnotation {
   id: string;
@@ -55,6 +70,7 @@ export type Annotation =
   | TextAnnotation
   | DrawAnnotation
   | HighlightAnnotation
+  | ShapeAnnotation
   | ImageAnnotation;
 
 // Document-level metadata, edited via a collapsible form and written on export.
