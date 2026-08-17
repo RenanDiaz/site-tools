@@ -12,13 +12,28 @@ import {
   ModalHeader,
   Spinner,
 } from "reactstrap";
-import type { Annotation, Point } from "./pdfEditorTypes";
+import {
+  EDIT_FONT_CSS,
+  EDIT_FONT_LABELS,
+  winAnsiUnsupported,
+} from "./pdfEditorTypes";
+import type { Annotation, EditFontKey, Point } from "./pdfEditorTypes";
+import { extractTextRuns, sampleRunColors } from "./pdfTextRuns";
+import type { TextRun } from "./pdfTextRuns";
 
 // The page is rendered to this CSS width (points are scaled to fit). Stored
 // annotation coordinates remain in page-space points regardless of this value.
 const DISPLAY_WIDTH = 680;
 
-type Tool = "select" | "text" | "draw" | "rect" | "ellipse" | "highlight" | "signature";
+type Tool =
+  | "select"
+  | "text"
+  | "edittext"
+  | "draw"
+  | "rect"
+  | "ellipse"
+  | "highlight"
+  | "signature";
 
 // Tools that are created by dragging a bounding box on the page.
 const BOX_TOOLS: Tool[] = ["rect", "ellipse", "highlight"];
@@ -26,6 +41,7 @@ const BOX_TOOLS: Tool[] = ["rect", "ellipse", "highlight"];
 const TOOL_LABELS: Record<Tool, string> = {
   select: "Select",
   text: "Text",
+  edittext: "Edit text",
   draw: "Draw",
   rect: "Rectangle",
   ellipse: "Circle",
@@ -68,6 +84,9 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
   const [isRendering, setIsRendering] = useState<boolean>(false);
   const [renderError, setRenderError] = useState<string>("");
 
+  // Existing text on the page, offered as click targets by the "Edit text" tool.
+  const [textRuns, setTextRuns] = useState<TextRun[]>([]);
+
   // Signature capture
   const [signatureUrl, setSignatureUrl] = useState<string>("");
   const [signatureAspect, setSignatureAspect] = useState<number>(0.4); // h / w
@@ -99,6 +118,7 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
     (async () => {
       setIsRendering(true);
       setRenderError("");
+      setTextRuns([]);
       try {
         const pdf = await task.promise;
         const page = await pdf.getPage(pageIndex + 1);
@@ -115,7 +135,13 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
         if (!ctx) throw new Error("Could not create canvas context");
 
         await page.render({ canvas, canvasContext: ctx, viewport }).promise;
-        if (!cancelled) setScale(displayScale);
+        if (cancelled) return;
+        setScale(displayScale);
+
+        // Text runs are extracted after the render so the canvas is available
+        // for background sampling as soon as a run is clicked.
+        const runs = await extractTextRuns(page);
+        if (!cancelled) setTextRuns(runs);
       } catch (err) {
         if (!cancelled) {
           setRenderError(
@@ -148,6 +174,41 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
       prev.map((a) => (a.id === id ? ({ ...a, ...patch } as Annotation) : a))
     );
   }, []);
+
+  // Turn an existing run of page text into an editable replacement: cover box
+  // and ink colour are sampled from the rendered page so the default looks like
+  // the text it stands in for.
+  const startEditRun = useCallback(
+    (run: TextRun) => {
+      const canvas = canvasRef.current;
+      const { bg, fg } = canvas
+        ? sampleRunColors(canvas, run, scale)
+        : { bg: "#ffffff", fg: "#000000" };
+      const id = crypto.randomUUID();
+      setAnnotations((prev) => [
+        ...prev,
+        {
+          id,
+          type: "edit",
+          runId: run.id,
+          x: run.x,
+          y: run.y,
+          w: run.w,
+          h: run.h,
+          baselineOffset: run.baselineOffset,
+          text: run.str,
+          original: run.str,
+          fontSize: run.fontSize,
+          fontKey: run.fontKey,
+          color: fg,
+          bgColor: bg,
+        },
+      ]);
+      setSelectedId(id);
+      setTool("select");
+    },
+    [scale]
+  );
 
   const deleteSelected = useCallback(() => {
     if (!selectedId) return;
@@ -337,7 +398,14 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
   };
 
   const selected = annotations.find((a) => a.id === selectedId) ?? null;
-  const cursor = tool === "select" ? "default" : "crosshair";
+  const cursor = tool === "select" ? "default" : tool === "edittext" ? "text" : "crosshair";
+
+  // Runs that already have a replacement are not offered again — the existing
+  // annotation is the thing to edit.
+  const editedRunIds = new Set(
+    annotations.filter((a) => a.type === "edit").map((a) => a.runId)
+  );
+  const availableRuns = textRuns.filter((r) => !editedRunIds.has(r.id));
 
   return (
     <Modal isOpen={isOpen} toggle={onCancel} size="xl" centered scrollable>
@@ -345,15 +413,23 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
       <ModalBody>
         <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
           <ButtonGroup size="sm">
-            {(["select", "text", "draw", "rect", "ellipse", "highlight"] as Tool[]).map((t) => (
-              <Button
-                key={t}
-                color={tool === t ? "primary" : "outline-secondary"}
-                onClick={() => setTool(t)}
-              >
-                {TOOL_LABELS[t]}
-              </Button>
-            ))}
+            {(["select", "text", "edittext", "draw", "rect", "ellipse", "highlight"] as Tool[]).map(
+              (t) => (
+                <Button
+                  key={t}
+                  color={tool === t ? "primary" : "outline-secondary"}
+                  onClick={() => setTool(t)}
+                  disabled={t === "edittext" && textRuns.length === 0}
+                  title={
+                    t === "edittext" && textRuns.length === 0
+                      ? "No editable text found on this page"
+                      : undefined
+                  }
+                >
+                  {TOOL_LABELS[t]}
+                </Button>
+              )
+            )}
           </ButtonGroup>
           <Label className="mb-0 d-flex align-items-center gap-1">
             <span className="text-muted small">Color</span>
@@ -447,6 +523,107 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
           </div>
         )}
 
+        {tool === "edittext" && (
+          <p className="text-muted small mb-3">
+            Click a highlighted piece of text to replace it. The original glyphs
+            stay in the file underneath a cover box, so this works best on a
+            flat background — and it is not redaction.
+          </p>
+        )}
+
+        {selected && selected.type === "edit" && (
+          <div className="mb-3 p-2 rounded" style={{ background: "var(--bs-tertiary-bg)" }}>
+            <div className="d-flex flex-wrap align-items-end gap-2">
+              <div className="flex-grow-1" style={{ minWidth: "220px" }}>
+                <Label for="editTextValue" className="text-muted small mb-1">
+                  Replacement text
+                </Label>
+                <Input
+                  id="editTextValue"
+                  type="text"
+                  value={selected.text}
+                  onChange={(e) =>
+                    updateAnnotation(selected.id, { text: e.target.value } as Partial<Annotation>)
+                  }
+                />
+              </div>
+              <div>
+                <Label for="editTextFont" className="text-muted small mb-1">
+                  Font
+                </Label>
+                <Input
+                  id="editTextFont"
+                  type="select"
+                  bsSize="sm"
+                  value={selected.fontKey}
+                  onChange={(e) =>
+                    updateAnnotation(selected.id, {
+                      fontKey: e.target.value as EditFontKey,
+                    } as Partial<Annotation>)
+                  }
+                >
+                  {(Object.keys(EDIT_FONT_LABELS) as EditFontKey[]).map((key) => (
+                    <option key={key} value={key}>
+                      {EDIT_FONT_LABELS[key]}
+                    </option>
+                  ))}
+                </Input>
+              </div>
+              <div>
+                <Label for="editTextSize" className="text-muted small mb-1">
+                  Size
+                </Label>
+                <Input
+                  id="editTextSize"
+                  type="number"
+                  min={4}
+                  max={96}
+                  step={0.5}
+                  bsSize="sm"
+                  style={{ width: "80px" }}
+                  value={Math.round(selected.fontSize * 10) / 10}
+                  onChange={(e) =>
+                    updateAnnotation(selected.id, {
+                      fontSize: Number(e.target.value),
+                    } as Partial<Annotation>)
+                  }
+                />
+              </div>
+              <div>
+                <Label for="editTextBg" className="text-muted small mb-1">
+                  Cover
+                </Label>
+                <Input
+                  id="editTextBg"
+                  type="color"
+                  value={selected.bgColor}
+                  onChange={(e) =>
+                    updateAnnotation(selected.id, { bgColor: e.target.value } as Partial<Annotation>)
+                  }
+                  style={{ width: "38px", height: "31px", padding: "2px" }}
+                />
+              </div>
+              <Button
+                color="outline-secondary"
+                size="sm"
+                disabled={selected.text === selected.original}
+                onClick={() =>
+                  updateAnnotation(selected.id, { text: selected.original } as Partial<Annotation>)
+                }
+              >
+                Restore original
+              </Button>
+            </div>
+            {winAnsiUnsupported(selected.text).length > 0 && (
+              <p className="text-warning small mb-0 mt-2">
+                The standard PDF fonts cannot draw{" "}
+                <strong>{winAnsiUnsupported(selected.text).join(" ")}</strong> — remove those
+                characters or the export will fail.
+              </p>
+            )}
+          </div>
+        )}
+
         {renderError && <p className="text-danger">{renderError}</p>}
 
         <div className="d-flex justify-content-center">
@@ -511,6 +688,45 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
                     }}
                   >
                     {a.text || " "}
+                  </div>
+                );
+              }
+
+              if (a.type === "edit") {
+                const css = EDIT_FONT_CSS[a.fontKey];
+                return (
+                  <div
+                    key={a.id}
+                    onPointerDown={(e) => beginDrag(e, a)}
+                    style={{
+                      position: "absolute",
+                      zIndex: index + 1,
+                      left: a.x * scale,
+                      top: a.y * scale,
+                      width: a.w * scale,
+                      height: a.h * scale,
+                      background: a.bgColor,
+                      pointerEvents: tool === "select" ? "auto" : "none",
+                      cursor: tool === "select" ? "move" : cursor,
+                      outline: isSel ? "1px dashed #0d6efd" : "none",
+                    }}
+                  >
+                    {/* Positioned so the text sits on the original baseline,
+                        matching how pdf-lib draws it on export. */}
+                    <span
+                      style={{
+                        position: "absolute",
+                        left: 0,
+                        top: (a.baselineOffset - a.fontSize) * scale,
+                        fontSize: a.fontSize * scale,
+                        lineHeight: 1,
+                        color: a.color,
+                        whiteSpace: "pre",
+                        ...css,
+                      }}
+                    >
+                      {a.text}
+                    </span>
                   </div>
                 );
               }
@@ -651,6 +867,31 @@ export const PDFAnnotator: FC<PDFAnnotatorProps> = ({
                 />
               )}
             </svg>
+
+            {/* Click targets for the existing page text, on top of everything
+                else so a run can still be picked where annotations overlap. */}
+            {tool === "edittext" &&
+              availableRuns.map((run) => (
+                <div
+                  key={run.id}
+                  title={run.str}
+                  onPointerDown={(e) => {
+                    e.stopPropagation();
+                    startEditRun(run);
+                  }}
+                  style={{
+                    position: "absolute",
+                    zIndex: annotations.length + 2,
+                    left: run.x * scale,
+                    top: run.y * scale,
+                    width: run.w * scale,
+                    height: run.h * scale,
+                    background: "rgba(13,110,253,0.12)",
+                    outline: "1px solid rgba(13,110,253,0.5)",
+                    cursor: "text",
+                  }}
+                />
+              ))}
           </div>
         </div>
 
