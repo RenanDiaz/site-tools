@@ -55,6 +55,76 @@ export interface ShapeAnnotation {
   fill: boolean;
 }
 
+// The standard-14 fonts usable when replacing existing text. Sticking to the
+// built-in fonts avoids embedding a font file (and the fontkit dependency); the
+// trade-off is that only WinAnsi-encodable characters can be written — see
+// `winAnsiUnsupported`.
+export type EditFontKey =
+  | "helvetica"
+  | "helvetica-bold"
+  | "helvetica-oblique"
+  | "times"
+  | "times-bold"
+  | "times-italic"
+  | "courier"
+  | "courier-bold"
+  | "courier-oblique";
+
+export const EDIT_FONT_LABELS: Record<EditFontKey, string> = {
+  helvetica: "Helvetica",
+  "helvetica-bold": "Helvetica Bold",
+  "helvetica-oblique": "Helvetica Italic",
+  times: "Times",
+  "times-bold": "Times Bold",
+  "times-italic": "Times Italic",
+  courier: "Courier",
+  "courier-bold": "Courier Bold",
+  "courier-oblique": "Courier Italic",
+};
+
+// CSS equivalents, used to preview a replacement the way pdf-lib will draw it.
+export const EDIT_FONT_CSS: Record<
+  EditFontKey,
+  { fontFamily: string; fontWeight: string; fontStyle: string }
+> = {
+  helvetica: { fontFamily: "Helvetica, Arial, sans-serif", fontWeight: "normal", fontStyle: "normal" },
+  "helvetica-bold": { fontFamily: "Helvetica, Arial, sans-serif", fontWeight: "bold", fontStyle: "normal" },
+  "helvetica-oblique": { fontFamily: "Helvetica, Arial, sans-serif", fontWeight: "normal", fontStyle: "italic" },
+  times: { fontFamily: "'Times New Roman', Times, serif", fontWeight: "normal", fontStyle: "normal" },
+  "times-bold": { fontFamily: "'Times New Roman', Times, serif", fontWeight: "bold", fontStyle: "normal" },
+  "times-italic": { fontFamily: "'Times New Roman', Times, serif", fontWeight: "normal", fontStyle: "italic" },
+  courier: { fontFamily: "'Courier New', Courier, monospace", fontWeight: "normal", fontStyle: "normal" },
+  "courier-bold": { fontFamily: "'Courier New', Courier, monospace", fontWeight: "bold", fontStyle: "normal" },
+  "courier-oblique": { fontFamily: "'Courier New', Courier, monospace", fontWeight: "normal", fontStyle: "italic" },
+};
+
+// A replacement for a run of text that already exists in the page. PDFs store
+// positioned glyphs rather than editable paragraphs, and pdf-lib cannot rewrite
+// a content stream, so "editing" is done by painting an opaque `bgColor` box
+// over the original run's box (x/y/w/h) and drawing `text` on the original
+// baseline. Consequences the UI has to be honest about: the original glyphs are
+// still in the file underneath, the cover only blends in over a flat
+// background, and longer replacements overflow into whatever follows.
+export interface EditTextAnnotation {
+  id: string;
+  type: "edit";
+  // Id of the pdf.js text run this replaces, so the picker can hide runs that
+  // already have a replacement.
+  runId: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  // Distance from the top of the box down to the original text baseline.
+  baselineOffset: number;
+  text: string;
+  original: string;
+  fontSize: number;
+  fontKey: EditFontKey;
+  color: string;
+  bgColor: string;
+}
+
 // A raster stamp (drawn or uploaded signature, logo, etc.) embedded as PNG.
 export interface ImageAnnotation {
   id: string;
@@ -71,7 +141,8 @@ export type Annotation =
   | DrawAnnotation
   | HighlightAnnotation
   | ShapeAnnotation
-  | ImageAnnotation;
+  | ImageAnnotation
+  | EditTextAnnotation;
 
 // Document-level metadata, edited via a collapsible form and written on export.
 export interface PdfMetadata {
@@ -129,6 +200,28 @@ export const DEFAULT_STAMP_OPTIONS: StampOptions = {
   watermarkOpacity: 0.2,
   watermarkRotation: 45,
   watermarkColor: "#888888",
+};
+
+// The WinAnsi (CP1252) code points that live outside Latin-1: the standard-14
+// fonts can encode these on top of the 0x20-0x7e and 0xa0-0xff ranges.
+const WIN_ANSI_EXTRA =
+  "€‚ƒ„…†‡ˆ‰Š‹ŒŽ" +
+  "‘’“”•–—˜™š›œžŸ";
+
+// Characters a standard-14 font cannot encode, deduplicated and in order of
+// first appearance. Used to warn while editing and to fail the export with a
+// message that names the offending characters instead of a pdf-lib stack trace.
+export const winAnsiUnsupported = (text: string): string[] => {
+  const bad: string[] = [];
+  for (const ch of text) {
+    const code = ch.codePointAt(0) ?? 0;
+    const ok =
+      (code >= 0x20 && code <= 0x7e) ||
+      (code >= 0xa0 && code <= 0xff) ||
+      WIN_ANSI_EXTRA.includes(ch);
+    if (!ok && !bad.includes(ch)) bad.push(ch);
+  }
+  return bad;
 };
 
 // Parse a "#rrggbb" string into 0..1 RGB components for pdf-lib's rgb().

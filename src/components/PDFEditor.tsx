@@ -24,15 +24,30 @@ import {
   DEFAULT_METADATA,
   DEFAULT_STAMP_OPTIONS,
   hexToRgb01,
+  winAnsiUnsupported,
 } from "./pdfEditorTypes";
 import type {
   Annotation,
+  EditFontKey,
   PdfMetadata,
   StampOptions,
   StampPosition,
 } from "./pdfEditorTypes";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+
+// The standard-14 font behind each text-replacement font choice.
+const STANDARD_FONT_BY_KEY: Record<EditFontKey, StandardFonts> = {
+  helvetica: StandardFonts.Helvetica,
+  "helvetica-bold": StandardFonts.HelveticaBold,
+  "helvetica-oblique": StandardFonts.HelveticaOblique,
+  times: StandardFonts.TimesRoman,
+  "times-bold": StandardFonts.TimesRomanBold,
+  "times-italic": StandardFonts.TimesRomanItalic,
+  courier: StandardFonts.Courier,
+  "courier-bold": StandardFonts.CourierBold,
+  "courier-oblique": StandardFonts.CourierOblique,
+};
 
 // A loaded source document: the original bytes are kept untouched so pdf-lib
 // can copy pages from them at export time.
@@ -368,7 +383,7 @@ export const PDFEditor: FC = () => {
     page: PDFPage,
     ann: Annotation,
     out: PDFDocument,
-    font: PDFFont,
+    getFont: (key: EditFontKey) => Promise<PDFFont>,
     imageCache: Map<string, PDFImage>
   ) => {
     const { height } = page.getSize();
@@ -378,9 +393,37 @@ export const PDFEditor: FC = () => {
         x: ann.x,
         y: height - ann.y - ann.fontSize,
         size: ann.fontSize,
-        font,
+        font: await getFont("helvetica"),
         color: rgb(r, g, b),
       });
+    } else if (ann.type === "edit") {
+      // Paint over the original run, then redraw on its baseline. The glyphs
+      // underneath survive in the content stream — this is an edit, not a
+      // redaction.
+      const bg = hexToRgb01(ann.bgColor);
+      page.drawRectangle({
+        x: ann.x,
+        y: height - ann.y - ann.h,
+        width: ann.w,
+        height: ann.h,
+        color: rgb(bg.r, bg.g, bg.b),
+      });
+      if (ann.text) {
+        const bad = winAnsiUnsupported(ann.text);
+        if (bad.length > 0) {
+          throw new Error(
+            `"${ann.text}" contains characters the standard PDF fonts cannot encode: ${bad.join(" ")}`
+          );
+        }
+        const { r, g, b } = hexToRgb01(ann.color);
+        page.drawText(ann.text, {
+          x: ann.x,
+          y: height - ann.y - ann.baselineOffset,
+          size: ann.fontSize,
+          font: await getFont(ann.fontKey),
+          color: rgb(r, g, b),
+        });
+      }
     } else if (ann.type === "highlight") {
       const { r, g, b } = hexToRgb01(ann.color);
       page.drawRectangle({
@@ -451,7 +494,18 @@ export const PDFEditor: FC = () => {
     try {
       const out = await PDFDocument.create();
       const loaded = new Map<string, PDFDocument>();
-      const font = await out.embedFont(StandardFonts.Helvetica);
+      // Fonts are embedded on first use so a document that never replaces text
+      // still only carries Helvetica.
+      const fontCache = new Map<EditFontKey, PDFFont>();
+      const getFont = async (key: EditFontKey): Promise<PDFFont> => {
+        let embedded = fontCache.get(key);
+        if (!embedded) {
+          embedded = await out.embedFont(STANDARD_FONT_BY_KEY[key]);
+          fontCache.set(key, embedded);
+        }
+        return embedded;
+      };
+      const font = await getFont("helvetica");
       const imageCache = new Map<string, PDFImage>();
       const total = pages.length;
 
@@ -473,7 +527,7 @@ export const PDFEditor: FC = () => {
         // Annotations and stamps are drawn in the page's original orientation;
         // any user rotation applied above rotates them along with the page.
         for (const ann of annotations[page.id] ?? []) {
-          await drawAnnotation(copied, ann, out, font, imageCache);
+          await drawAnnotation(copied, ann, out, getFont, imageCache);
         }
 
         if (stamp.watermarkText.trim()) {
@@ -1022,12 +1076,21 @@ export const PDFEditor: FC = () => {
             <li><strong>Rotate:</strong> Turn individual pages in 90° steps</li>
             <li><strong>Convert:</strong> Import PNG/JPG as pages, or download any page as an image</li>
             <li><strong>Annotate:</strong> Add text, freehand drawing, rectangles, circles, highlights and signatures</li>
+            <li><strong>Edit text:</strong> Click existing text on a page to replace it</li>
             <li><strong>Stamp:</strong> Add page numbers and a text watermark</li>
             <li><strong>Metadata:</strong> Edit the document title, author, keywords and more</li>
           </ul>
           <p className="mb-2">
             <strong>Privacy:</strong> All processing happens locally in your
             browser. Nothing is uploaded to a server.
+          </p>
+          <p className="mb-2 text-muted small">
+            <strong>About editing text:</strong> a PDF stores positioned glyphs,
+            not editable paragraphs, so replacing text works by covering the
+            original run and drawing over it. It looks right on a flat
+            background, keeps the original glyphs in the file underneath, uses
+            the standard PDF fonts (Helvetica / Times / Courier) rather than the
+            document's own font, and does not reflow the surrounding text.
           </p>
           <p className="mb-0 text-muted small">
             <strong>Note:</strong> password protection / encryption is not
